@@ -68,7 +68,7 @@ export function WorkingHoursEditor({ hours, onSave }: WorkingHoursEditorProps) {
                 type="checkbox"
                 checked={!workingHours[day]?.closed}
                 onChange={(e) => handleChange(day, 'closed', !e.target.checked)}
-                className="rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                className="rounded border-gray-300 text-amber-600 focus:ring-amber-600 focus:ring-offset-0"
               />
               <span className="text-sm">Open</span>
             </label>
