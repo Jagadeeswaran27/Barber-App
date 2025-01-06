@@ -7,7 +7,7 @@ interface User {
   id: string;
   email: string;
   name: string;
-  type: 'user' | 'barber';
+  type: 'customer' | 'barber';
 }
 
 interface AuthContextType {
@@ -18,7 +18,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+interface AuthProviderProps {
+  children: (props: { loading: boolean }) => React.ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loading, logout }}>
-      {!loading && children}
+      {children({ loading })}
     </AuthContext.Provider>
   );
 }

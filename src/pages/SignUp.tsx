@@ -20,7 +20,7 @@ export function SignUp() {
             className="text-sm"
             onClick={() => setIsBarber(false)}
           >
-            Sign up as User
+            Sign up as Customer
           </Button>
           <Button 
             variant={isBarber ? 'primary' : 'secondary'}
@@ -31,7 +31,7 @@ export function SignUp() {
           </Button>
         </div>
 
-        <SignUpForm userType={isBarber ? 'barber' : 'user'} />
+        <SignUpForm userType={isBarber ? 'barber' : 'customer'} />
 
         <p className="mt-4 text-center text-gray-600">
           Already have an account?{' '}

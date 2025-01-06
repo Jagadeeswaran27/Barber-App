@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { AuthLayout } from '../components/AuthLayout';
-import { Button } from '../components/Button';
+import { LoadingButton } from '../components/LoadingButton';
 import { Input } from '../components/Input';
 
 export function Login() {
@@ -13,6 +13,7 @@ export function Login() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +23,9 @@ export function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
       const { user: firebaseUser } = await signInWithEmailAndPassword(
         auth,
@@ -33,10 +37,12 @@ export function Login() {
       const userData = userDoc.data();
 
       if (userData) {
-        navigate(userData.type === 'user' ? '/dashboard' : '/shop');
+        navigate(userData.type === 'customer' ? '/dashboard' : '/shop');
       }
     } catch (err) {
       setError('Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +65,7 @@ export function Login() {
             value={formData.email}
             onChange={handleChange}
             required
+            disabled={loading}
           />
 
           <Input
@@ -68,11 +75,12 @@ export function Login() {
             value={formData.password}
             onChange={handleChange}
             required
+            disabled={loading}
           />
 
-          <Button type="submit" className="w-full">
+          <LoadingButton type="submit" loading={loading} className="w-full">
             Login
-          </Button>
+          </LoadingButton>
         </form>
 
         <p className="mt-4 text-center text-gray-600">

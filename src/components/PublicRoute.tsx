@@ -9,7 +9,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
   const { user } = useAuth();
 
   if (user) {
-    return <Navigate to={user.type === 'user' ? '/dashboard' : '/shop'} />;
+    return <Navigate to={user.type === 'customer' ? '/dashboard' : '/shop'} />;
   }
 
   return <>{children}</>;

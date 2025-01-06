@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
-import { Button } from './Button';
+import { LoadingButton } from './LoadingButton';
 import { Input } from './Input';
 
 interface SignUpFormProps {
-  userType: 'barber' | 'user';
+  userType: 'barber' | 'customer';
 }
 
 export function SignUpForm({ userType }: SignUpFormProps) {
@@ -17,6 +17,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
     name: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,6 +27,9 @@ export function SignUpForm({ userType }: SignUpFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
       const { user } = await createUserWithEmailAndPassword(
         auth, 
@@ -53,6 +57,8 @@ export function SignUpForm({ userType }: SignUpFormProps) {
       navigate('/');
     } catch (err) {
       setError('Failed to create account');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +77,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         value={formData.name}
         onChange={handleChange}
         required
+        disabled={loading}
       />
 
       <Input
@@ -80,6 +87,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         value={formData.email}
         onChange={handleChange}
         required
+        disabled={loading}
       />
 
       <Input
@@ -89,11 +97,12 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         value={formData.password}
         onChange={handleChange}
         required
+        disabled={loading}
       />
 
-      <Button type="submit" className="w-full">
+      <LoadingButton type="submit" loading={loading} className="w-full">
         {userType === 'barber' ? 'Create Barber Account' : 'Sign Up'}
-      </Button>
+      </LoadingButton>
     </form>
   );
 }
