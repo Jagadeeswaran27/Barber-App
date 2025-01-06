@@ -14,9 +14,10 @@ export const isNative = () => {
 export const setupStatusBar = async () => {
   if (!isNative()) return;
   
-  await StatusBar.setStyle({ style: Style.Dark });
+  await StatusBar.setStyle({ style: Style.Light });
   if (isPlatform('android')) {
     await StatusBar.setBackgroundColor({ color: '#ffffff' });
+    await StatusBar.setOverlaysWebView({ overlay: true });
   }
 };
 

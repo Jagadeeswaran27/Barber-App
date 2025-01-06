@@ -13,8 +13,8 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
-        <div className="container mx-auto px-4 py-3 sm:py-4">
+      <div className="bg-white shadow safe-top">
+        <div className="container mx-auto px-4 py-3 sm:py-4 mt-4">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between">
               <Link to="/">
