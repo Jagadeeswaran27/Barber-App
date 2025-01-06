@@ -59,35 +59,37 @@ export function WorkingHoursEditor({ hours, onSave }: WorkingHoursEditorProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-4">
         {DAYS.map(day => (
-          <div key={day} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-            <div className="w-28">
-              <span className="font-medium">{day}</span>
+          <div key={day} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="w-24 sm:w-28">
+                <span className="font-medium">{day}</span>
+              </div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!workingHours[day]?.closed}
+                  onChange={(e) => handleChange(day, 'closed', !e.target.checked)}
+                  className="rounded border-gray-300 text-amber-600 focus:ring-amber-600 focus:ring-offset-0"
+                />
+                <span className="text-sm">Open</span>
+              </label>
             </div>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={!workingHours[day]?.closed}
-                onChange={(e) => handleChange(day, 'closed', !e.target.checked)}
-                className="rounded border-gray-300 text-amber-600 focus:ring-amber-600 focus:ring-offset-0"
-              />
-              <span className="text-sm">Open</span>
-            </label>
             {!workingHours[day]?.closed && (
-              <>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <input
                   type="time"
                   value={workingHours[day]?.open || '09:00'}
                   onChange={(e) => handleChange(day, 'open', e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500"
+                  className="w-full sm:w-auto rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                 />
-                <span>to</span>
+                <span className="mx-1">to</span>
                 <input
                   type="time"
                   value={workingHours[day]?.close || '17:00'}
                   onChange={(e) => handleChange(day, 'close', e.target.value)}
-                  className="rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500"
+                  className="w-full sm:w-auto rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                 />
-              </>
+              </div>
             )}
           </div>
         ))}

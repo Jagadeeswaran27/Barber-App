@@ -46,17 +46,17 @@ export function ShopDashboard() {
         return (
           <div className="space-y-6">
             {/* Shop Code Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-100">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="bg-amber-50/50 p-3 sm:p-4 rounded-lg border border-amber-100">
                 <h3 className="text-lg font-semibold text-amber-800 mb-2">Your Shop Code</h3>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 flex items-stretch">
-                    <code className="flex-1 bg-white px-4 py-2 rounded-l-lg border border-r-0 border-amber-200 text-lg font-mono">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                  <div className="w-full sm:flex-1 flex items-stretch">
+                    <code className="flex-1 bg-white px-3 sm:px-4 py-2 rounded-l-lg border border-r-0 border-amber-200 text-base sm:text-lg font-mono overflow-x-auto">
                       {shopData?.code}
                     </code>
                     <button
                       onClick={handleCopyCode}
-                      className="px-4 bg-white border border-l-0 border-amber-200 rounded-r-lg hover:bg-amber-50 transition-colors flex items-center gap-2"
+                      className="px-3 sm:px-4 bg-white border border-l-0 border-amber-200 rounded-r-lg hover:bg-amber-50 transition-colors flex items-center gap-2"
                       title="Copy code"
                     >
                       {copied ? (
@@ -66,7 +66,7 @@ export function ShopDashboard() {
                       )}
                     </button>
                   </div>
-                  <p className="text-amber-700 text-sm flex-shrink-0">
+                  <p className="text-amber-700 text-sm">
                     Share this code with your customers
                   </p>
                 </div>
@@ -74,8 +74,8 @@ export function ShopDashboard() {
             </div>
 
             {/* Shop Name Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center gap-2 mb-6">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <Store className="h-5 w-5 text-amber-600" />
                 <h3 className="text-lg font-semibold">Shop Name</h3>
               </div>
@@ -94,8 +94,8 @@ export function ShopDashboard() {
             </div>
 
             {/* Working Hours Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center gap-2 mb-6">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <Clock className="h-5 w-5 text-amber-600" />
                 <h3 className="text-lg font-semibold">Working Hours</h3>
               </div>
@@ -114,8 +114,8 @@ export function ShopDashboard() {
             </div>
 
             {/* Offers Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center gap-2 mb-6">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <Tag className="h-5 w-5 text-amber-600" />
                 <h3 className="text-lg font-semibold">Special Offers</h3>
               </div>
@@ -137,8 +137,8 @@ export function ShopDashboard() {
 
       case 'chat':
         return user.id ? (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center gap-2 mb-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <MessageSquare className="h-5 w-5 text-amber-600" />
               <h3 className="text-lg font-semibold">Customer Messages</h3>
             </div>
@@ -150,11 +150,11 @@ export function ShopDashboard() {
 
   return (
     <DashboardLayout title={`Welcome to your shop, ${user.name}`}>
-      <div className="mb-6 border-b">
-        <div className="flex gap-4">
+      <div className="mb-4 sm:mb-6 border-b">
+        <div className="flex gap-2 sm:gap-4">
           <button
             onClick={() => setActiveTab('details')}
-            className={`px-4 py-2 font-medium ${
+            className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base ${
               activeTab === 'details'
                 ? 'text-amber-600 border-b-2 border-amber-600'
                 : 'text-gray-600 hover:text-amber-600'
@@ -164,7 +164,7 @@ export function ShopDashboard() {
           </button>
           <button
             onClick={() => setActiveTab('chat')}
-            className={`px-4 py-2 font-medium ${
+            className={`px-3 sm:px-4 py-2 font-medium text-sm sm:text-base ${
               activeTab === 'chat'
                 ? 'text-amber-600 border-b-2 border-amber-600'
                 : 'text-gray-600 hover:text-amber-600'

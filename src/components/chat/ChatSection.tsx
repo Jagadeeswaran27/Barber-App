@@ -15,7 +15,7 @@ export function ChatSection({ shopId }: ChatSectionProps) {
     if (user && shopId) {
       initializeChat(shopId, user.id);
     }
-  }, [shopId, user]);
+  }, [shopId, user, initializeChat]);
 
   const handleSendMessage = async (content: string) => {
     if (!user) return;
@@ -23,7 +23,7 @@ export function ChatSection({ shopId }: ChatSectionProps) {
   };
 
   return (
-    <div className="-m-6"> {/* Negative margin to counteract parent padding */}
+    <div className="h-[calc(100vh-20rem)] max-h-[600px] min-h-[400px] -mx-6 bg-white rounded-lg border border-gray-100 overflow-hidden">
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}

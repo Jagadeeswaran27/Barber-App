@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Native platform adjustments */
+.keyboard-open {
+  padding-bottom: env(keyboard-inset-height);
+}
+
+/* iOS safe area adjustments */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+  
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+}

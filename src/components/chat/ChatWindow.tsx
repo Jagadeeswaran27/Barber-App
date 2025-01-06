@@ -46,22 +46,22 @@ export function ChatWindow({
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-12rem)] flex items-center justify-center bg-amber-50/20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+      <div className="h-full flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] bg-gradient-to-b from-amber-50/30 to-white">
-      {/* Messages */}
+    <div className="flex flex-col h-full bg-gradient-to-b from-amber-50/20 to-white">
       <div 
         ref={messageContainerRef}
-        className="flex-1 overflow-y-auto px-6 py-4 space-y-4"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3"
       >
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">
-            No messages yet. Start a conversation!
+            <p className="text-sm">No messages yet</p>
+            <p className="text-xs mt-1">Start the conversation!</p>
           </div>
         ) : (
           messages.map((message, index) => {
@@ -75,25 +75,27 @@ export function ChatWindow({
                 key={message.id}
                 className={`flex ${message.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
               >
-                <div className="max-w-[75%] space-y-1">
+                <div className="max-w-[85%] sm:max-w-[75%] space-y-1">
                   {isFirstInGroup && (
                     <span className={`text-xs font-medium ${
-                      message.senderId === currentUserId ? 'text-right text-amber-700' : 'text-left text-gray-600'
+                      message.senderId === currentUserId 
+                        ? 'text-right text-amber-700' 
+                        : 'text-left text-gray-600'
                     } block`}>
                       {message.senderName}
                     </span>
                   )}
                   <div
-                    className={`px-4 py-2 rounded-2xl ${
+                    className={`px-3 py-2 rounded-2xl ${
                       message.senderId === currentUserId
-                        ? 'bg-amber-600 text-white shadow-sm'
-                        : 'bg-white border border-gray-100 shadow-sm'
+                        ? 'bg-amber-600 text-white'
+                        : 'bg-white shadow-sm border border-gray-100'
                     } ${!isLastInGroup ? 'mb-1' : ''}`}
                   >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   </div>
                   {isLastInGroup && (
-                    <span className={`text-xs ${
+                    <span className={`text-[10px] ${
                       message.senderId === currentUserId ? 'text-right' : 'text-left'
                     } block text-gray-400`}>
                       {formatMessageTime(message.timestamp)}
@@ -107,21 +109,20 @@ export function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="border-t bg-white px-4 py-3 shadow-sm">
-        <form onSubmit={handleSubmit} className="flex gap-2 max-w-4xl mx-auto">
+      <div className="p-3 border-t bg-white">
+        <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 border-gray-200 rounded-full px-4 py-2 focus:border-amber-500 focus:ring-amber-500 bg-gray-50/50"
+            placeholder="Type your message..."
+            className="flex-1 text-sm border-gray-200 rounded-full px-4 py-2 focus:border-amber-500 focus:ring-amber-500 bg-gray-50/50"
             disabled={sending}
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:hover:bg-amber-600 shadow-sm"
+            className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:hover:bg-amber-600"
           >
             <Send className="h-5 w-5" />
           </button>

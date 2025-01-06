@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { Camera } from '@capacitor/camera';
+import { isNative } from '../utils/platform';
 
 interface QRScannerConfig {
   fps?: number;
@@ -19,16 +21,32 @@ export function useQRScanner(
     qrboxSize = 250
   } = config;
 
+  const requestCameraPermission = async () => {
+    if (!isNative()) return true;
+    
+    const permission = await Camera.checkPermissions();
+    if (permission.camera !== 'granted') {
+      const request = await Camera.requestPermissions();
+      return request.camera === 'granted';
+    }
+    return true;
+  };
+
   const startScanner = useCallback(async () => {
     try {
       setError('');
+
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) {
+        throw new Error('Camera permission denied');
+      }
 
       if (!scannerRef.current) {
         scannerRef.current = new Html5Qrcode('qr-reader');
       }
 
       await scannerRef.current.start(
-        { facingMode: 'environment' }, // Simplified camera config
+        { facingMode: 'environment' },
         {
           fps,
           qrbox: { width: qrboxSize, height: qrboxSize }
@@ -38,7 +56,6 @@ export function useQRScanner(
           onResult(decodedText);
         },
         (errorMessage) => {
-          // Only log scanning errors, don't show to user
           console.debug('QR Scanning:', errorMessage);
         }
       );
