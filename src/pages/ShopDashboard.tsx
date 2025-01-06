@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/Button';
+import { Logo } from '../components/Logo';
 
 export function ShopDashboard() {
   const { user, logout } = useAuth();
@@ -8,8 +10,13 @@ export function ShopDashboard() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-semibold">Welcome to your shop, {user?.name}</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Link to="/">
+                <Logo />
+              </Link>
+              <h1 className="text-xl font-semibold">Welcome to your shop, {user?.name}</h1>
+            </div>
             <Button variant="secondary" onClick={logout}>Logout</Button>
           </div>
         </div>
