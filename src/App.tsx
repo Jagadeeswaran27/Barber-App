@@ -13,7 +13,14 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route 
+            path="/" 
+            element={
+              <PublicRoute>
+                <Home />
+              </PublicRoute>
+            } 
+          />
           <Route 
             path="/login" 
             element={
