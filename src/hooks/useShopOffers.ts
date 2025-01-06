@@ -67,11 +67,23 @@ export function useShopOffers(shopId: string) {
     }
   };
 
+  const redeemOffer = async (offerId: string) => {
+    try {
+      // After successful redemption, remove the offer from local state
+      setOffers(prev => prev.filter(offer => offer.id !== offerId));
+      return true;
+    } catch (err) {
+      console.error('Error redeeming offer:', err);
+      throw new Error('Failed to redeem offer');
+    }
+  };
+
   return { 
     offers, 
     loading, 
     error, 
     createOffer,
-    deleteOffer
+    deleteOffer,
+    redeemOffer
   };
 }

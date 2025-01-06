@@ -8,21 +8,23 @@ export function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       {/* Navigation */}
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex items-center justify-between">
-        <Link to="/">
-          <Logo />
-        </Link>
-        <div className="flex gap-2 sm:gap-4">
-          <Link to="/login">
-            <Button variant="secondary" className="text-sm sm:text-base px-3 sm:px-6">
-              Login
-            </Button>
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 safe-top">
+        <div className="flex items-center justify-between mt-4">
+          <Link to="/">
+            <Logo />
           </Link>
-          <Link to="/signup">
-            <Button className="text-sm sm:text-base px-3 sm:px-6">
-              Sign Up
-            </Button>
-          </Link>
+          <div className="flex gap-2 sm:gap-4">
+            <Link to="/login">
+              <Button variant="secondary" className="text-sm sm:text-base px-3 sm:px-6">
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button className="text-sm sm:text-base px-3 sm:px-6">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -50,6 +52,7 @@ export function Home() {
         </div>
       </div>
 
+      {/* Rest of the content remains the same */}
       {/* Features Section */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
@@ -80,7 +83,7 @@ export function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 safe-bottom">
         <div className="bg-amber-600 rounded-2xl p-8 sm:p-12 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Ready to Transform Your Barbershop?

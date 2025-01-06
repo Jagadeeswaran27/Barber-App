@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { QRCodeScanner } from './QRCodeScanner';
 import { OfferCodeInput } from './OfferCodeInput';
 import { Button } from '../Button';
+import { Toast } from '../Toast';
 import { ScanLine, AlertCircle, CheckCircle2, KeyRound } from 'lucide-react';
 import { useOfferRedemption } from '../../hooks/useOfferRedemption';
 import { getOfferValidationError } from '../../utils/offerValidation';
@@ -15,19 +16,10 @@ interface OfferRedemptionProps {
 
 export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemptionProps) {
   const [mode, setMode] = useState<'scan' | 'manual' | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [isRedeemed, setIsRedeemed] = useState(false);
   const { redeemOffer, loading } = useOfferRedemption(offer.id, customerId);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (success) {
-      timeout = setTimeout(() => {
-        setSuccess(false);
-      }, 3000);
-    }
-    return () => clearTimeout(timeout);
-  }, [success]);
+  const [showToast, setShowToast] = useState(false);
 
   const handleRedeem = async (code: string) => {
     setError(null);
@@ -47,7 +39,8 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
       await redeemOffer(offer.shopId);
       await onRedeem();
       setMode(null);
-      setSuccess(true);
+      setIsRedeemed(true);
+      setShowToast(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to redeem offer';
       setError(errorMessage);
@@ -58,11 +51,16 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
     }
   };
 
-  if (success) {
+  if (isRedeemed) {
     return (
-      <div className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded animate-fade-in">
-        <CheckCircle2 className="h-5 w-5" />
-        <span>Offer successfully redeemed!</span>
+      <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded-lg">
+        <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+        <div>
+          <p className="font-medium">Offer Successfully Redeemed!</p>
+          <p className="text-sm text-green-700 mt-1">
+            You've claimed {offer.discount}% off
+          </p>
+        </div>
       </div>
     );
   }
@@ -111,32 +109,41 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
   }
 
   return (
-    <div className="space-y-2">
-      <Button
-        onClick={() => setMode('scan')}
-        className="w-full flex items-center justify-center gap-2"
-        disabled={loading}
-      >
-        <ScanLine className="h-5 w-5" />
-        Scan QR Code
-      </Button>
+    <>
+      <div className="space-y-2">
+        <Button
+          onClick={() => setMode('scan')}
+          className="w-full flex items-center justify-center gap-2"
+          disabled={loading}
+        >
+          <ScanLine className="h-5 w-5" />
+          Scan QR Code
+        </Button>
 
-      <Button
-        onClick={() => setMode('manual')}
-        variant="secondary"
-        className="w-full flex items-center justify-center gap-2"
-        disabled={loading}
-      >
-        <KeyRound className="h-5 w-5" />
-        Enter Code Manually
-      </Button>
+        <Button
+          onClick={() => setMode('manual')}
+          variant="secondary"
+          className="w-full flex items-center justify-center gap-2"
+          disabled={loading}
+        >
+          <KeyRound className="h-5 w-5" />
+          Enter Code Manually
+        </Button>
 
-      {error && (
-        <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded animate-shake">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
+        {error && (
+          <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded animate-shake">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+
+      {showToast && (
+        <Toast 
+          message="Offer redeemed successfully!" 
+          onClose={() => setShowToast(false)} 
+        />
       )}
-    </div>
+    </>
   );
 }

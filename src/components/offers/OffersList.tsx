@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferCard } from './OfferCard';
