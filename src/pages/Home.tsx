@@ -9,7 +9,7 @@ export function Home() {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       {/* Navigation */}
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 safe-top">
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-8">
           <Link to="/">
             <Logo />
           </Link>
@@ -52,7 +52,6 @@ export function Home() {
         </div>
       </div>
 
-      {/* Rest of the content remains the same */}
       {/* Features Section */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">

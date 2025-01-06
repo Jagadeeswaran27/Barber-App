@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Percent, Calendar, Trash2, QrCode, Copy } from 'lucide-react';
+import { Percent, Calendar, Trash2, QrCode, Copy, CheckCircle2 } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferRedemption } from './OfferRedemption';
 import { Toast } from '../Toast';
@@ -68,7 +68,6 @@ export function OfferCard({
   return (
     <>
       <div className="bg-white border border-gray-200 rounded-lg p-4 relative">
-        {/* Existing card content */}
         {showActions && (
           <button
             onClick={handleDelete}
@@ -113,6 +112,56 @@ export function OfferCard({
             )}
           </div>
 
+          {/* Show QR code and offer code for barbers */}
+          {user?.type === 'barber' && (
+            <div className="mt-4 pt-4 border-t space-y-4">
+              <div className="flex items-center justify-between gap-2 bg-gray-50 p-2 rounded">
+                <code className="font-mono text-sm text-gray-600">
+                  {offer.code}
+                </code>
+                <button
+                  onClick={copyCode}
+                  className="text-gray-400 hover:text-amber-600 transition-colors"
+                  title="Copy code"
+                >
+                  {copied ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+
+              {showQR ? (
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <img 
+                      src={offer.qrCode} 
+                      alt="Offer QR Code"
+                      className="mx-auto max-w-[200px] w-full"
+                    />
+                  </div>
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setShowQR(false)}
+                  >
+                    Hide QR Code
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => setShowQR(true)}
+                >
+                  <QrCode className="h-5 w-5" />
+                  Show QR Code
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Show redemption UI for customers */}
           {user?.type === 'customer' && onRedeem && isActive() && !isRedeemed && (
             <div className="mt-4 pt-4 border-t">
               <OfferRedemption
