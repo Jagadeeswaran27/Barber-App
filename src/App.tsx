@@ -8,6 +8,7 @@ import { Login } from './pages/Login';
 import { SignUp } from './pages/SignUp';
 import { UserDashboard } from './pages/UserDashboard';
 import { ShopDashboard } from './pages/ShopDashboard';
+import { ShopDetails } from './pages/ShopDetails';
 
 export default function App() {
   return (
@@ -53,6 +54,14 @@ export default function App() {
                 element={
                   <ProtectedRoute userType="barber">
                     <ShopDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/shop/:shopId"
+                element={
+                  <ProtectedRoute userType="customer">
+                    <ShopDetails />
                   </ProtectedRoute>
                 }
               />
