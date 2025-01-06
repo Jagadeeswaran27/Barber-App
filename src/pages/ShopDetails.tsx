@@ -21,7 +21,8 @@ export function ShopDetails() {
   const { shopDetails, loading, error } = useShopDetails(shopId || '');
   const { 
     offers, 
-    loading: offersLoading 
+    loading: offersLoading,
+    redeemOffer
   } = useShopOffers(shopId || '');
 
   return (
@@ -72,6 +73,7 @@ export function ShopDetails() {
                   offers={offers}
                   onCreateOffer={() => {}}
                   onDeleteOffer={() => {}}
+                  onRedeemOffer={redeemOffer}
                 />
               )}
             </div>

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LoadingButton } from './LoadingButton';
+import { CheckCircle2 } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -16,6 +17,17 @@ export function WorkingHoursEditor({ hours, onSave }: WorkingHoursEditorProps) {
   const [workingHours, setWorkingHours] = useState<WorkingHours>(hours);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (showSuccess) {
+      timeout = setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [showSuccess]);
 
   const handleChange = (day: string, field: 'open' | 'close' | 'closed', value: string | boolean) => {
     setWorkingHours(prev => ({
@@ -31,9 +43,11 @@ export function WorkingHoursEditor({ hours, onSave }: WorkingHoursEditorProps) {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setShowSuccess(false);
 
     try {
       await onSave(workingHours);
+      setShowSuccess(true);
     } catch (err) {
       setError('Failed to update working hours');
     } finally {
@@ -78,7 +92,16 @@ export function WorkingHoursEditor({ hours, onSave }: WorkingHoursEditorProps) {
           </div>
         ))}
       </div>
+      
       {error && <div className="text-red-600 text-sm">{error}</div>}
+      
+      {showSuccess && (
+        <div className="flex items-center gap-2 text-green-600 text-sm">
+          <CheckCircle2 className="h-4 w-4" />
+          <span>Working hours saved successfully</span>
+        </div>
+      )}
+      
       <LoadingButton type="submit" loading={loading}>
         Save Working Hours
       </LoadingButton>
