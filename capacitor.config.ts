@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.barberbook.app',
+  appId: 'com.nebula.barberapp',
   appName: 'BarberBook',
   webDir: 'dist',
   server: {
