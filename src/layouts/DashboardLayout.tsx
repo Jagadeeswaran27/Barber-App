@@ -53,7 +53,7 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
         </div>
       </div>
 
-      <div className="flex-1 px-4 py-6 mt-[64px]">
+      <div className="flex-1 px-4 py-6 mt-[68px]">
         {children}
       </div>
     </div>

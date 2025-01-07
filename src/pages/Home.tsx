@@ -27,7 +27,7 @@ export function Home() {
       </nav>
 
       {/* Mobile-optimized Hero */}
-      <div className="px-4 pt-24 pb-12">
+      <div className="px-4 pt-28 pb-12">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Book Your Next Haircut with Ease
