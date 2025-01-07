@@ -1,54 +1,53 @@
-import { PushNotifications } from '@capacitor/push-notifications';
-import { doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { isNative } from './platform';
+import { PushNotifications } from "@capacitor/push-notifications";
+import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { isNative } from "./platform";
 
 export async function initializePushNotifications(userId: string) {
-  if (!isNative()) return;
+  if (!isNative()) {
+    console.warn("Push notifications are only available on native platforms.");
+    return;
+  }
 
   try {
-    // Request permission
-    const result = await PushNotifications.requestPermissions();
-    if (result.receive !== 'granted') {
-      throw new Error('Push notification permission denied');
+    // Request permission for push notifications
+    const permissionResult = await PushNotifications.requestPermissions();
+    if (permissionResult.receive !== "granted") {
+      console.error("Push notification permission denied");
+      return;
     }
 
-    // Register with FCM
+    // Register for push notifications
     await PushNotifications.register();
 
-    // Get FCM token
-    const { value: token } = await PushNotifications.getToken();
+    // Listen for registration success to get FCM token
+    PushNotifications.addListener("registration", async ({ value: token }) => {
+      if (!token) {
+        console.error("FCM token is undefined");
+        return;
+      }
 
-    // Get current user doc to check existing tokens
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    const userData = userDoc.data();
-    
-    // Prepare token data
-    const tokenData = {
-      token,
-      platform: isNative() ? 'mobile' : 'web',
-      updatedAt: new Date().toISOString()
-    };
+      // Fetch user document to check existing tokens
+      const userRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userRef);
 
-    // Update Firestore - add new token to array
-    await updateDoc(doc(db, 'users', userId), {
-      fcmTokens: arrayUnion(tokenData)
-    });
+      if (!userDoc.exists()) {
+        console.error(`User document with ID ${userId} does not exist.`);
+        return;
+      }
 
-    // Listen for token refresh
-    PushNotifications.addListener('registration', async ({ value }) => {
-      const refreshedTokenData = {
-        token: value,
-        platform: isNative() ? 'mobile' : 'web',
-        updatedAt: new Date().toISOString()
-      };
-      
-      await updateDoc(doc(db, 'users', userId), {
-        fcmTokens: arrayUnion(refreshedTokenData)
+      // Add new token to Firestore array
+      await updateDoc(userRef, {
+        fcmTokens: arrayUnion(token),
       });
+      console.log("FCM token added successfully:", token);
     });
 
+    // Handle registration error
+    PushNotifications.addListener("registrationError", (error) => {
+      console.error("Error during registration for push notifications:", error);
+    });
   } catch (err) {
-    console.error('Failed to initialize push notifications:', err);
+    console.error("Failed to initialize push notifications:", err);
   }
 }
