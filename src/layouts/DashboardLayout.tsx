@@ -30,7 +30,7 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
       <div className={`bg-white shadow-sm safe-top fixed top-0 left-0 right-0 z-10 ${
         isNativeApp ? 'pt-6' : ''
       }`}>
-        <div className="px-4 py-2">
+        <div className="px-4 py-2 pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/" className="flex-shrink-0">
