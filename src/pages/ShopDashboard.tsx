@@ -25,7 +25,7 @@ const DEFAULT_HOURS = {
 
 type ActiveTab = 'details' | 'chat';
 
-export function ShopDashboard() {
+function ShopDashboard() {
   const { user } = useAuth();
   const { shopData, loading, error } = useShopData(user?.id || '');
   const { updateShopName, updateWorkingHours } = useShopManagement(user?.id || '');
@@ -48,7 +48,7 @@ export function ShopDashboard() {
     switch (activeTab) {
       case 'details':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 mt-4">
             {/* Shop Code Section */}
             <div className="bg-white rounded-lg shadow p-4 sm:p-6">
               <div className="bg-amber-50/50 p-3 sm:p-4 rounded-lg border border-amber-100">
@@ -124,7 +124,7 @@ export function ShopDashboard() {
                   <Tag className="h-5 w-5 text-amber-600" />
                   <h3 className="text-lg font-semibold">Special Offers</h3>
                 </div>
-                 <Button
+                <Button
                   onClick={() => setShowNotificationPopup(true)}
                   variant="secondary"
                   className="max-sm:hidden flex items-center gap-2 text-sm"
@@ -161,7 +161,7 @@ export function ShopDashboard() {
 
       case 'chat':
         return user.id ? (
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 mt-4">
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <MessageSquare className="h-5 w-5 text-amber-600" />
               <h3 className="text-lg font-semibold">Customer Messages</h3>
@@ -207,6 +207,8 @@ export function ShopDashboard() {
         <NotificationPopup
           offers={offers}
           onClose={() => setShowNotificationPopup(false)}
+          shopId={user.id}
+          shopName={shopData?.name || 'Unnamed Shop'}
         />
       )}
 
@@ -217,3 +219,5 @@ export function ShopDashboard() {
     </DashboardLayout>
   );
 }
+
+export { ShopDashboard };

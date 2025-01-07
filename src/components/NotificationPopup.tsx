@@ -1,15 +1,29 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
+import { functions } from '../lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 import type { Offer } from '../types/offer';
 
 interface NotificationPopupProps {
   offers: Offer[];
   onClose: () => void;
+  shopId: string;
+  shopName: string;
 }
 
-export function NotificationPopup({ offers, onClose }: NotificationPopupProps) {
+export function NotificationPopup({ offers, onClose, shopId, shopName }: NotificationPopupProps) {
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const isOfferActive = (offer: Offer) => {
+    const now = new Date().getTime();
+    const start = new Date(offer.startDate).getTime();
+    const end = new Date(offer.endDate).getTime();
+    return now >= start && now <= end;
+  };
+
+  const activeOffers = offers.filter(isOfferActive);
 
   const handleToggleOffer = (offerId: string) => {
     setSelectedOffers(prev => 
@@ -19,10 +33,23 @@ export function NotificationPopup({ offers, onClose }: NotificationPopupProps) {
     );
   };
 
-  const handleNotify = () => {
-    const selected = offers.filter(offer => selectedOffers.includes(offer.id));
-    console.log('Selected offers for notification:', selected);
-    onClose();
+  const handleNotify = async () => {
+    if (selectedOffers.length === 0) return;
+    
+    setLoading(true);
+    try {
+      const notifyUsers = httpsCallable(functions, 'notifyUsers');
+      await notifyUsers({
+        shopId,
+        offerIds: selectedOffers,
+        shopName
+      });
+      onClose();
+    } catch (error) {
+      console.error('Failed to send notifications:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,7 +67,7 @@ export function NotificationPopup({ offers, onClose }: NotificationPopupProps) {
         
         <div className="p-4">
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-            {offers.map(offer => (
+            {activeOffers.map(offer => (
               <label 
                 key={offer.id}
                 className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-gray-50"
@@ -62,7 +89,7 @@ export function NotificationPopup({ offers, onClose }: NotificationPopupProps) {
             ))}
           </div>
 
-          {offers.length === 0 && (
+          {activeOffers.length === 0 && (
             <p className="text-center text-gray-500 py-8">
               No active offers available
             </p>
@@ -72,10 +99,10 @@ export function NotificationPopup({ offers, onClose }: NotificationPopupProps) {
         <div className="p-4 border-t">
           <Button
             onClick={handleNotify}
-            disabled={selectedOffers.length === 0}
+            disabled={selectedOffers.length === 0 || loading}
             className="w-full"
           >
-            Notify ({selectedOffers.length} selected)
+            {loading ? 'Sending...' : `Notify (${selectedOffers.length} selected)`}
           </Button>
         </div>
       </div>
