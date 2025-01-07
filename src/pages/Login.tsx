@@ -6,6 +6,7 @@ import { auth, db } from '../lib/firebase';
 import { AuthLayout } from '../components/AuthLayout';
 import { LoadingButton } from '../components/LoadingButton';
 import { Input } from '../components/Input';
+import { initializePushNotifications } from '../utils/fcm';
 
 export function Login() {
   const [formData, setFormData] = useState({
@@ -15,11 +16,6 @@ export function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +33,10 @@ export function Login() {
       const userData = userDoc.data();
 
       if (userData) {
+        // Initialize push notifications for customers
+        if (userData.type === 'customer') {
+          await initializePushNotifications(firebaseUser.uid);
+        }
         navigate(userData.type === 'customer' ? '/dashboard' : '/shop');
       }
     } catch (err) {
@@ -44,6 +44,11 @@ export function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (

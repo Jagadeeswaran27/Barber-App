@@ -8,7 +8,8 @@ import { ShopNameEditor } from '../components/ShopNameEditor';
 import { WorkingHoursEditor } from '../components/WorkingHoursEditor';
 import { OffersList } from '../components/offers/OffersList';
 import { BarberChatSection } from '../components/chat/BarberChatSection';
-import { Scissors, Tag, Store, Clock, MessageSquare, Copy, CheckCircle2 } from 'lucide-react';
+import { Scissors, Tag, Store, Clock, MessageSquare, Copy, CheckCircle2, Bell } from 'lucide-react';
+import { Button } from '../components/Button';
 
 const DEFAULT_HOURS = {
   Monday: { open: '09:00', close: '17:00', closed: false },
@@ -115,9 +116,18 @@ export function ShopDashboard() {
 
             {/* Offers Section */}
             <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-              <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <Tag className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Special Offers</h3>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-5 w-5 text-amber-600" />
+                  <h3 className="text-lg font-semibold">Special Offers</h3>
+                </div>
+                <Button
+                  variant="secondary"
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <Bell className="h-4 w-4" />
+                  Notify Customers
+                </Button>
               </div>
               {offersLoading ? (
                 <div className="flex items-center justify-center p-4">

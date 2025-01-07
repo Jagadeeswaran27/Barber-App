@@ -19,10 +19,23 @@ async function requestInitialPermissions() {
   }
 }
 
+// Request notification permission
+async function requestNotificationPermission() {
+  if ('Notification' in window) {
+    try {
+      const permission = await Notification.requestPermission();
+      console.log('Notification permission:', permission);
+    } catch (err) {
+      console.warn('Failed to request notification permission:', err);
+    }
+  }
+}
+
 // Setup native functionality
 setupStatusBar();
 setupKeyboard();
 requestInitialPermissions();
+requestNotificationPermission();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
