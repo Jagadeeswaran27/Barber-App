@@ -8,7 +8,7 @@ export function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       {/* Mobile-optimized Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-10">
+      <nav className="fixed top-0 pt-6 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-10">
         <div className="px-4 py-3 flex items-center justify-between safe-top">
           <Logo className="scale-90" />
           <div className="flex gap-2">

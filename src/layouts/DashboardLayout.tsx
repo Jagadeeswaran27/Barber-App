@@ -28,7 +28,7 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <div className={`bg-white shadow-sm safe-top fixed top-0 left-0 right-0 z-10 ${
-        isNativeApp ? 'pt-4' : ''
+        isNativeApp ? 'pt-6' : ''
       }`}>
         <div className="px-4 py-2">
           <div className="flex items-center justify-between">
