@@ -8,6 +8,8 @@ import { ShopNameEditor } from '../components/ShopNameEditor';
 import { WorkingHoursEditor } from '../components/WorkingHoursEditor';
 import { OffersList } from '../components/offers/OffersList';
 import { BarberChatSection } from '../components/chat/BarberChatSection';
+import { NotificationPopup } from '../components/NotificationPopup';
+import { BottomNav } from '../components/BottomNav';
 import { Scissors, Tag, Store, Clock, MessageSquare, Copy, CheckCircle2, Bell } from 'lucide-react';
 import { Button } from '../components/Button';
 
@@ -30,6 +32,7 @@ export function ShopDashboard() {
   const { offers, loading: offersLoading, createOffer, deleteOffer } = useShopOffers(user?.id || '');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
   const [copied, setCopied] = useState(false);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
 
   if (!user) return null;
 
@@ -121,9 +124,20 @@ export function ShopDashboard() {
                   <Tag className="h-5 w-5 text-amber-600" />
                   <h3 className="text-lg font-semibold">Special Offers</h3>
                 </div>
-                <Button
+                 <Button
+                  onClick={() => setShowNotificationPopup(true)}
                   variant="secondary"
-                  className="flex items-center gap-2 text-sm"
+                  className="max-sm:hidden flex items-center gap-2 text-sm"
+                >
+                  <Bell className="h-4 w-4" />
+                  Notify Customers
+                </Button>
+              </div>
+              <div className="sm:hidden mb-4 sm:mb-6">
+                <Button
+                  onClick={() => setShowNotificationPopup(true)}
+                  variant="secondary"
+                  className="flex items-center w-full gap-2 text-sm"
                 >
                   <Bell className="h-4 w-4" />
                   Notify Customers
@@ -160,7 +174,7 @@ export function ShopDashboard() {
 
   return (
     <DashboardLayout title={`Welcome to your shop, ${user.name}`}>
-      <div className="mb-4 sm:mb-6 border-b">
+      <div className="mb-4 sm:mb-6 border-b hidden lg:block">
         <div className="flex gap-2 sm:gap-4">
           <button
             onClick={() => setActiveTab('details')}
@@ -185,7 +199,21 @@ export function ShopDashboard() {
         </div>
       </div>
 
-      {renderTabContent()}
+      <div className="pb-20 lg:pb-0">
+        {renderTabContent()}
+      </div>
+
+      {showNotificationPopup && (
+        <NotificationPopup
+          offers={offers}
+          onClose={() => setShowNotificationPopup(false)}
+        />
+      )}
+
+      <BottomNav 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+      />
     </DashboardLayout>
   );
 }

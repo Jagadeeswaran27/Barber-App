@@ -1,56 +1,59 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
-import { Button } from '../components/Button';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { isNative } from '../utils/platform';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   title: string;
+  showBackButton?: boolean;
 }
 
-export function DashboardLayout({ children, title }: DashboardLayoutProps) {
+export function DashboardLayout({ children, title, showBackButton }: DashboardLayoutProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const isNativeApp = isNative();
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
+  // Extract name from title (assuming format "Welcome, Name" or "Welcome to your shop, Name")
+  const name = title.includes('Welcome') 
+    ? title.split(',').pop()?.trim() 
+    : title;
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Fixed Header */}
-      <div className="bg-white shadow safe-top fixed top-0 left-0 right-0 z-10">
-        <div className="container mx-auto px-4 py-3 sm:py-4 mt-4">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between">
-              <Link to="/">
-                <Logo className="scale-90 sm:scale-100" />
+      <div className={`bg-white shadow-sm safe-top fixed top-0 left-0 right-0 z-10 ${
+        isNativeApp ? 'pt-4' : ''
+      }`}>
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/" className="flex-shrink-0">
+                <Logo className="scale-90" />
               </Link>
-              <Button 
-                variant="secondary" 
-                onClick={handleLogout}
-                className="sm:hidden text-sm px-3"
-              >
-                Logout
-              </Button>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm text-gray-500">Hello,</span>
+                <span className="font-medium">{name}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between">
-              <h1 className="text-base sm:text-xl font-semibold truncate">{title}</h1>
-              <Button 
-                variant="secondary" 
-                onClick={handleLogout}
-                className="hidden sm:block"
-              >
-                Logout
-              </Button>
-            </div>
+            
+            <button
+              onClick={handleLogout}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Logout"
+            >
+              <LogOut className="h-5 w-5 text-gray-600" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 container mx-auto px-4 py-6 sm:py-8 mt-[120px] sm:mt-[88px]">
+      <div className="flex-1 px-4 py-6 mt-[64px]">
         {children}
       </div>
     </div>

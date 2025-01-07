@@ -7,20 +7,18 @@ import { Scissors, Calendar, Tag, Clock } from 'lucide-react';
 export function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 safe-top">
-        <div className="flex items-center justify-between mt-8">
-          <Link to="/">
-            <Logo />
-          </Link>
-          <div className="flex gap-2 sm:gap-4">
+      {/* Mobile-optimized Navigation */}
+      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-10">
+        <div className="px-4 py-3 flex items-center justify-between safe-top">
+          <Logo className="scale-90" />
+          <div className="flex gap-2">
             <Link to="/login">
-              <Button variant="secondary" className="text-sm sm:text-base px-3 sm:px-6">
+              <Button variant="secondary" className="text-sm px-3 py-1.5">
                 Login
               </Button>
             </Link>
             <Link to="/signup">
-              <Button className="text-sm sm:text-base px-3 sm:px-6">
+              <Button className="text-sm px-3 py-1.5">
                 Sign Up
               </Button>
             </Link>
@@ -28,23 +26,23 @@ export function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+      {/* Mobile-optimized Hero */}
+      <div className="px-4 pt-24 pb-12">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Book Your Next Haircut with Ease
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 mb-8">
+          <p className="text-gray-600 mb-6 mx-auto max-w-sm">
             Connect with your favorite barbers, discover special offers, and manage your appointments all in one place.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col gap-3">
             <Link to="/signup">
-              <Button className="w-full sm:w-auto text-lg px-8 py-3">
+              <Button className="w-full py-3">
                 Get Started
               </Button>
             </Link>
             <Link to="/signup?type=barber">
-              <Button variant="secondary" className="w-full sm:w-auto text-lg px-8 py-3">
+              <Button variant="secondary" className="w-full py-3">
                 I'm a Barber
               </Button>
             </Link>
@@ -52,12 +50,12 @@ export function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
+      {/* Mobile-optimized Features */}
+      <div className="px-4 py-8 bg-white">
+        <h2 className="text-xl font-bold text-center mb-6">
           Everything You Need
         </h2>
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4">
           <FeatureCard
             icon={Calendar}
             title="Easy Booking"
@@ -81,17 +79,17 @@ export function Home() {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 safe-bottom">
-        <div className="bg-amber-600 rounded-2xl p-8 sm:p-12 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+      {/* Mobile-optimized CTA */}
+      <div className="px-4 py-8 safe-bottom">
+        <div className="bg-amber-600 rounded-xl p-6 text-center">
+          <h2 className="text-xl font-bold text-white mb-3">
             Ready to Transform Your Barbershop?
           </h2>
-          <p className="text-amber-100 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-amber-100 text-sm mb-4">
             Join BarberBook today and streamline your booking process, attract more clients, and grow your business.
           </p>
           <Link to="/signup?type=barber">
-            <Button variant="secondary" className="text-lg px-8 py-3">
+            <Button variant="secondary" className="w-full py-3">
               Join as a Barber
             </Button>
           </Link>

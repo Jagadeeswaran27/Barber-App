@@ -6,6 +6,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { WorkingHoursDisplay } from '../components/WorkingHoursDisplay';
 import { OffersList } from '../components/offers/OffersList';
 import { ChatSection } from '../components/chat/ChatSection';
+import { BottomNav } from '../components/BottomNav';
 import { Scissors, Clock, Tag, Store, MessageSquare } from 'lucide-react';
 
 const DEFAULT_HOURS = {
@@ -31,7 +32,6 @@ export function ShopDetails() {
       case 'details':
         return (
           <div className="space-y-6">
-            {/* Shop Details Section */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Store className="h-5 w-5 text-amber-600" />
@@ -44,7 +44,6 @@ export function ShopDetails() {
               </code>
             </div>
             
-            {/* Working Hours Section */}
             <div className="border-t pt-6">
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="h-5 w-5 text-amber-600" />
@@ -53,7 +52,6 @@ export function ShopDetails() {
               <WorkingHoursDisplay hours={shopDetails?.workingHours || DEFAULT_HOURS} />
             </div>
 
-            {/* Offers Section */}
             <div className="border-t pt-6">
               <div className="flex items-center gap-2 mb-4">
                 <Tag className="h-5 w-5 text-amber-600" />
@@ -74,6 +72,7 @@ export function ShopDetails() {
             </div>
           </div>
         );
+
       case 'chat':
         return shopId ? (
           <div className="bg-white rounded-lg shadow p-6">
@@ -89,7 +88,7 @@ export function ShopDetails() {
 
   return (
     <DashboardLayout title={shopDetails?.name || 'Shop Details'}>
-      <div className="mb-6 border-b">
+      <div className="mb-6 border-b hidden lg:block">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveTab('details')}
@@ -114,17 +113,24 @@ export function ShopDetails() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        {loading ? (
-          <div className="flex items-center justify-center p-4">
-            <Scissors className="h-6 w-6 animate-spin text-amber-600" />
-          </div>
-        ) : error ? (
-          <div className="text-red-600">{error}</div>
-        ) : shopDetails && (
-          renderTabContent()
-        )}
+      <div className="pb-20 lg:pb-0">
+        <div className="bg-white rounded-lg shadow p-6">
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <Scissors className="h-6 w-6 animate-spin text-amber-600" />
+            </div>
+          ) : error ? (
+            <div className="text-red-600">{error}</div>
+          ) : shopDetails && (
+            renderTabContent()
+          )}
+        </div>
       </div>
+
+      <BottomNav 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+      />
     </DashboardLayout>
   );
 }
