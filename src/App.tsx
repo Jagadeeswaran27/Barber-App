@@ -8,11 +8,27 @@ import { Login } from './pages/Login';
 import { SignUp } from './pages/SignUp';
 import { ShopSetup } from './pages/ShopSetup';
 import { UserDashboard } from './pages/UserDashboard';
-import ShopDashboard from './pages/ShopDashboard'; // Changed to default import
+import ShopDashboard from './pages/ShopDashboard';
 import { ShopDetails } from './pages/ShopDetails';
 import { Profile } from './pages/Profile';
+import { useEffect } from 'react';
+import { isNative } from './utils/platform';
+import { PushNotifications } from '@capacitor/push-notifications';
 
 export default function App() {
+  useEffect(() => {
+    if (isNative()) {
+      // Only initialize push notifications on native platforms
+      PushNotifications.addListener('pushNotificationReceived', (notification) => {
+        console.log('Push notification received:', notification);
+      });
+
+      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+        console.log('Push notification action performed:', notification);
+      });
+    }
+  }, []);
+
   return (
     <AuthProvider>
       {({ loading }) =>
