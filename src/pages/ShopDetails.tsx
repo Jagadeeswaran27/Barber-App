@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useShopDetails } from '../hooks/useShopDetails';
 import { useShopOffers } from '../hooks/useShopOffers';
 import { DashboardLayout } from '../layouts/DashboardLayout';
+import { WorkingHoursDisplay } from '../components/WorkingHoursDisplay';
 import { OffersList } from '../components/offers/OffersList';
 import { ChatSection } from '../components/chat/ChatSection';
 import { BottomNav } from '../components/BottomNav';
@@ -18,12 +19,22 @@ export function ShopDetails() {
   const { offers, loading: offersLoading, redeemOffer } = useShopOffers(shopId || '');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
 
+  // Check for stored tab preference on component mount
+  useEffect(() => {
+    const storedTab = sessionStorage.getItem('activeTab');
+    if (storedTab === 'offers') {
+      setActiveTab('offers');
+      // Clear the stored preference after using it
+      sessionStorage.removeItem('activeTab');
+    }
+  }, []);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'details':
         return (
           <div className="space-y-6">
-            {/* Shop Banner with Image */}
+            {/* Shop Banner */}
             <div className="relative h-48 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg overflow-hidden">
               {shopDetails?.image ? (
                 <>
@@ -54,55 +65,43 @@ export function ShopDetails() {
               </div>
             </div>
 
-            {/* Shop Details */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                  <Store className="h-6 w-6 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-lg">About the Shop</h3>
-                  <p className="text-sm text-gray-500">
-                    Shop Code: <code className="font-mono">{shopDetails?.code}</code>
-                  </p>
-                </div>
+            {/* Working Hours */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Store className="h-5 w-5 text-amber-600" />
+                <h3 className="text-lg font-semibold">Working Hours</h3>
               </div>
-
-              {shopDetails?.description && (
-                <p className="text-gray-600">{shopDetails.description}</p>
-              )}
+              <WorkingHoursDisplay hours={shopDetails?.workingHours || {}} />
             </div>
           </div>
         );
 
       case 'offers':
         return (
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <div className="flex items-center gap-2 mb-6">
-                <Tag className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Special Offers</h3>
-              </div>
-              {offersLoading ? (
-                <div className="flex items-center justify-center p-4">
-                  <Scissors className="h-6 w-6 animate-spin text-amber-600" />
-                </div>
-              ) : (
-                <OffersList
-                  offers={offers}
-                  onCreateOffer={() => {}}
-                  onDeleteOffer={() => {}}
-                  onRedeemOffer={redeemOffer}
-                />
-              )}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Tag className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-semibold">Special Offers</h3>
             </div>
+            {offersLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <Scissors className="h-6 w-6 animate-spin text-amber-600" />
+              </div>
+            ) : (
+              <OffersList
+                offers={offers}
+                onCreateOffer={() => {}}
+                onDeleteOffer={() => {}}
+                onRedeemOffer={redeemOffer}
+              />
+            )}
           </div>
         );
 
       case 'chat':
         return shopId ? (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center gap-2 mb-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
               <MessageSquare className="h-5 w-5 text-amber-600" />
               <h3 className="text-lg font-semibold">Chat with Shop</h3>
             </div>
@@ -113,9 +112,9 @@ export function ShopDetails() {
   };
 
   return (
-    <DashboardLayout title={`Welcome, ${user?.name || ''}`}>
+    <DashboardLayout title={shopDetails?.name || 'Shop Details'}>
       {/* Desktop Tabs */}
-      <div className="mb-4 border-b hidden lg:block">
+      <div className="mb-6 border-b hidden lg:block">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveTab('details')}
@@ -157,11 +156,11 @@ export function ShopDetails() {
             <Scissors className="h-8 w-8 animate-spin text-amber-600" />
           </div>
         ) : error ? (
-          <div className="text-red-600 text-center p-8">
-            Failed to load shop details
-          </div>
+          <div className="text-red-600 text-center p-8">{error}</div>
         ) : (
-          renderTabContent()
+          <div className="bg-white rounded-lg shadow p-6">
+            {renderTabContent()}
+          </div>
         )}
       </div>
 

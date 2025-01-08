@@ -52,8 +52,10 @@ export async function initializePushNotifications(userId: string) {
         );
         const data = notification.notification.data;
         if (data.shopId) {
-          // Use history.pushState for smoother navigation
+          // Navigate to shop details with offers tab
           history.pushState(null, "", `/shop/${data.shopId}`);
+          // Store the tab preference in sessionStorage
+          sessionStorage.setItem("activeTab", "offers");
           // Force a page reload to ensure proper route handling
           window.location.reload();
         }
@@ -66,8 +68,10 @@ export async function initializePushNotifications(userId: string) {
       (notification) => {
         const data = notification.notification.extra;
         if (data.shopId) {
-          // Use history.pushState for smoother navigation
+          // Navigate to shop details with offers tab
           history.pushState(null, "", `/shop/${data.shopId}`);
+          // Store the tab preference in sessionStorage
+          sessionStorage.setItem("activeTab", "offers");
           // Force a page reload to ensure proper route handling
           window.location.reload();
         }
