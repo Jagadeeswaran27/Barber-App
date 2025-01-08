@@ -1,4 +1,5 @@
 import { PushNotifications } from "@capacitor/push-notifications";
+import { LocalNotifications } from "@capacitor/local-notifications";
 import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { isNative } from "./platform";
@@ -27,7 +28,6 @@ export async function initializePushNotifications(userId: string) {
         return;
       }
 
-      // Fetch user document to check existing tokens
       const userRef = doc(db, "users", userId);
       const userDoc = await getDoc(userRef);
 
@@ -36,11 +36,41 @@ export async function initializePushNotifications(userId: string) {
         return;
       }
 
-      // Add new token to Firestore array
       await updateDoc(userRef, {
         fcmTokens: arrayUnion(token),
       });
-      console.log("FCM token added successfully:", token);
+    });
+
+    // Handle notification click
+    PushNotifications.addListener("pushNotificationActionPerformed", (notification) => {
+      const data = notification.notification.data;
+      if (data.shopId) {
+        window.location.href = `/shop/${data.shopId}`;
+      }
+    });
+
+    // Handle notification received while app is in foreground
+    PushNotifications.addListener("pushNotificationReceived", async (notification) => {
+      // Create a local notification
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: notification.title,
+            body: notification.body,
+            id: Date.now(),
+            extra: notification.data,
+            schedule: { at: new Date(Date.now()) }
+          }
+        ]
+      });
+
+      // Handle local notification click
+      LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+        const data = notification.notification.extra;
+        if (data.shopId) {
+          window.location.href = `/shop/${data.shopId}`;
+        }
+      });
     });
 
     // Handle registration error
