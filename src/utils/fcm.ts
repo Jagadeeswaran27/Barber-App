@@ -11,9 +11,13 @@ export async function initializePushNotifications(userId: string) {
   }
 
   try {
-    // Request permission for push notifications
-    const permissionResult = await PushNotifications.requestPermissions();
-    if (permissionResult.receive !== "granted") {
+    // Request permissions for both push and local notifications
+    const [pushPermission, localPermission] = await Promise.all([
+      PushNotifications.requestPermissions(),
+      LocalNotifications.requestPermissions()
+    ]);
+
+    if (pushPermission.receive !== "granted") {
       console.error("Push notification permission denied");
       return;
     }
@@ -51,7 +55,6 @@ export async function initializePushNotifications(userId: string) {
 
     // Handle notification received while app is in foreground
     PushNotifications.addListener("pushNotificationReceived", async (notification) => {
-      // Create a local notification
       await LocalNotifications.schedule({
         notifications: [
           {
@@ -59,18 +62,26 @@ export async function initializePushNotifications(userId: string) {
             body: notification.body,
             id: Date.now(),
             extra: notification.data,
-            schedule: { at: new Date(Date.now()) }
+            schedule: { at: new Date(Date.now()) },
+            sound: 'default',
+            smallIcon: 'ic_notification',
+            largeIcon: 'ic_notification',
+            autoCancel: true,
+            ongoing: false,
+            importance: 4, // High importance for heads-up notification
+            visibility: 1, // Public visibility
+            vibrate: true
           }
         ]
       });
+    });
 
-      // Handle local notification click
-      LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
-        const data = notification.notification.extra;
-        if (data.shopId) {
-          window.location.href = `/shop/${data.shopId}`;
-        }
-      });
+    // Handle local notification click
+    LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+      const data = notification.notification.extra;
+      if (data.shopId) {
+        window.location.href = `/shop/${data.shopId}`;
+      }
     });
 
     // Handle registration error
