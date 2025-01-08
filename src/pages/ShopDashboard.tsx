@@ -25,7 +25,7 @@ const DEFAULT_HOURS = {
 
 type ActiveTab = 'details' | 'chat';
 
-function ShopDashboard() {
+export default function ShopDashboard() {
   const { user } = useAuth();
   const { shopData, loading, error } = useShopData(user?.id || '');
   const { updateShopName, updateWorkingHours } = useShopManagement(user?.id || '');
@@ -209,6 +209,7 @@ function ShopDashboard() {
           onClose={() => setShowNotificationPopup(false)}
           shopId={user.id}
           shopName={shopData?.name || 'Unnamed Shop'}
+          shopCode={shopData?.code || ''}
         />
       )}
 
@@ -219,5 +220,3 @@ function ShopDashboard() {
     </DashboardLayout>
   );
 }
-
-export { ShopDashboard };

@@ -10,9 +10,10 @@ interface NotificationPopupProps {
   onClose: () => void;
   shopId: string;
   shopName: string;
+  shopCode: string; // Add shopCode prop
 }
 
-export function NotificationPopup({ offers, onClose, shopId, shopName }: NotificationPopupProps) {
+export function NotificationPopup({ offers, onClose, shopId, shopName, shopCode }: NotificationPopupProps) {
   const [selectedOffers, setSelectedOffers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -42,7 +43,8 @@ export function NotificationPopup({ offers, onClose, shopId, shopName }: Notific
       await notifyUsers({
         shopId,
         offerIds: selectedOffers,
-        shopName
+        shopName,
+        shopCode // Include shopCode in the function call
       });
       onClose();
     } catch (error) {

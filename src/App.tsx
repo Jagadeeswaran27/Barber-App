@@ -7,7 +7,7 @@ import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { SignUp } from './pages/SignUp';
 import { UserDashboard } from './pages/UserDashboard';
-import { ShopDashboard } from './pages/ShopDashboard';
+import ShopDashboard from './pages/ShopDashboard';
 import { ShopDetails } from './pages/ShopDetails';
 
 export default function App() {
