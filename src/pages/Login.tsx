@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { AuthLayout } from '../components/AuthLayout';
@@ -28,6 +28,15 @@ export function Login() {
         formData.email,
         formData.password
       );
+
+      // Check email verification
+      if (!firebaseUser.emailVerified) {
+        // Resend verification email
+        await sendEmailVerification(firebaseUser);
+        setError('Please verify your email before logging in. A new verification email has been sent.');
+        setLoading(false);
+        return;
+      }
 
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       const userData = userDoc.data();

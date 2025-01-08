@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { LoadingButton } from './LoadingButton';
 import { Input } from './Input';
+import { Toast } from './Toast';
 
 interface SignUpFormProps {
   userType: 'barber' | 'customer';
@@ -18,6 +19,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +44,9 @@ export function SignUpForm({ userType }: SignUpFormProps) {
           formData.password
         );
         
+        // Send verification email
+        await sendEmailVerification(user);
+        
         await setDoc(doc(db, 'users', user.uid), {
           email: formData.email,
           name: formData.name,
@@ -49,7 +54,10 @@ export function SignUpForm({ userType }: SignUpFormProps) {
           createdAt: new Date().toISOString()
         });
 
-        navigate('/');
+        setShowVerificationMessage(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 5000);
       }
     } catch (err) {
       setError('Failed to create account');
@@ -59,46 +67,56 @@ export function SignUpForm({ userType }: SignUpFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-          {error}
-        </div>
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        <Input
+          label="Full Name"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
+
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
+
+        <LoadingButton type="submit" loading={loading} className="w-full">
+          {userType === 'barber' ? 'Continue to Shop Setup' : 'Sign Up'}
+        </LoadingButton>
+      </form>
+
+      {showVerificationMessage && (
+        <Toast
+          message="Please check your email to verify your account. Redirecting to login..."
+          onClose={() => setShowVerificationMessage(false)}
+          duration={5000}
+        />
       )}
-
-      <Input
-        label="Full Name"
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
-
-      <Input
-        label="Email"
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
-
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
-
-      <LoadingButton type="submit" loading={loading} className="w-full">
-        {userType === 'barber' ? 'Continue to Shop Setup' : 'Sign Up'}
-      </LoadingButton>
-    </form>
+    </>
   );
 }
