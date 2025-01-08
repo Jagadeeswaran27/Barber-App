@@ -11,7 +11,6 @@ export async function initializePushNotifications(userId: string) {
   }
 
   try {
-    // Request permissions for both push and local notifications
     const [pushPermission, localPermission] = await Promise.all([
       PushNotifications.requestPermissions(),
       LocalNotifications.requestPermissions()
@@ -22,10 +21,8 @@ export async function initializePushNotifications(userId: string) {
       return;
     }
 
-    // Register for push notifications
     await PushNotifications.register();
 
-    // Listen for registration success to get FCM token
     PushNotifications.addListener("registration", async ({ value: token }) => {
       if (!token) {
         console.error("FCM token is undefined");
@@ -45,15 +42,18 @@ export async function initializePushNotifications(userId: string) {
       });
     });
 
-    // Handle notification click
+    // Handle push notification click
     PushNotifications.addListener("pushNotificationActionPerformed", (notification) => {
       const data = notification.notification.data;
       if (data.shopId) {
-        window.location.href = `/shop/${data.shopId}`;
+        // Use history.pushState for smoother navigation
+        history.pushState(null, '', `/shop/${data.shopId}`);
+        // Force a page reload to ensure proper route handling
+        window.location.reload();
       }
     });
 
-    // Handle notification received while app is in foreground
+    // Handle foreground notifications
     PushNotifications.addListener("pushNotificationReceived", async (notification) => {
       await LocalNotifications.schedule({
         notifications: [
@@ -68,8 +68,8 @@ export async function initializePushNotifications(userId: string) {
             largeIcon: 'ic_notification',
             autoCancel: true,
             ongoing: false,
-            importance: 4, // High importance for heads-up notification
-            visibility: 1, // Public visibility
+            importance: 4,
+            visibility: 1,
             vibrate: true
           }
         ]
@@ -80,11 +80,13 @@ export async function initializePushNotifications(userId: string) {
     LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
       const data = notification.notification.extra;
       if (data.shopId) {
-        window.location.href = `/shop/${data.shopId}`;
+        // Use history.pushState for smoother navigation
+        history.pushState(null, '', `/shop/${data.shopId}`);
+        // Force a page reload to ensure proper route handling
+        window.location.reload();
       }
     });
 
-    // Handle registration error
     PushNotifications.addListener("registrationError", (error) => {
       console.error("Error during registration for push notifications:", error);
     });
