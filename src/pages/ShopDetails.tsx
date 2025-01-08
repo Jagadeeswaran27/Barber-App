@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useShopDetails } from '../hooks/useShopDetails';
 import { useShopOffers } from '../hooks/useShopOffers';
 import { DashboardLayout } from '../layouts/DashboardLayout';
-import { WorkingHoursDisplay } from '../components/WorkingHoursDisplay';
 import { OffersList } from '../components/offers/OffersList';
 import { ChatSection } from '../components/chat/ChatSection';
 import { BottomNav } from '../components/BottomNav';
@@ -65,13 +64,25 @@ export function ShopDetails() {
               </div>
             </div>
 
-            {/* Working Hours */}
+            {/* Shop Description */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Store className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Working Hours</h3>
+                <h3 className="text-lg font-semibold">About the Shop</h3>
               </div>
-              <WorkingHoursDisplay hours={shopDetails?.workingHours || {}} />
+              <div className="space-y-4">
+                {shopDetails?.description && (
+                  <p className="text-gray-600">{shopDetails.description}</p>
+                )}
+                <div className="pt-4 border-t">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Shop Code:</span>
+                    <code className="font-mono text-sm bg-gray-50 px-2 py-1 rounded">
+                      {shopDetails?.code}
+                    </code>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );

@@ -26,7 +26,7 @@ export function useShopStats(shopId: string) {
         const customerCount = customerSnapshot.size;
 
         // Get active offers count
-        const now = new Date().toISOString();
+        const now = new Date();
         const offersQuery = query(
           collection(db, 'offers'),
           where('shopId', '==', shopId)
@@ -34,7 +34,9 @@ export function useShopStats(shopId: string) {
         const offersSnapshot = await getDocs(offersQuery);
         const activeOffersCount = offersSnapshot.docs.filter(doc => {
           const data = doc.data();
-          return data.endDate > now;
+          const endDate = new Date(data.endDate);
+          const startDate = new Date(data.startDate);
+          return now >= startDate && now <= endDate;
         }).length;
 
         setStats({
