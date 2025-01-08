@@ -13,7 +13,7 @@ export async function initializePushNotifications(userId: string) {
   try {
     const [pushPermission, localPermission] = await Promise.all([
       PushNotifications.requestPermissions(),
-      LocalNotifications.requestPermissions()
+      LocalNotifications.requestPermissions(),
     ]);
 
     if (pushPermission.receive !== "granted") {
@@ -43,49 +43,36 @@ export async function initializePushNotifications(userId: string) {
     });
 
     // Handle push notification click
-    PushNotifications.addListener("pushNotificationActionPerformed", (notification) => {
-      const data = notification.notification.data;
-      if (data.shopId) {
-        // Use history.pushState for smoother navigation
-        history.pushState(null, '', `/shop/${data.shopId}`);
-        // Force a page reload to ensure proper route handling
-        window.location.reload();
+    PushNotifications.addListener(
+      "pushNotificationActionPerformed",
+      (notification) => {
+        console.log(
+          "Push notification clicked:",
+          notification.notification.data
+        );
+        const data = notification.notification.data;
+        if (data.shopId) {
+          // Use history.pushState for smoother navigation
+          history.pushState(null, "", `/shop/${data.shopId}`);
+          // Force a page reload to ensure proper route handling
+          window.location.reload();
+        }
       }
-    });
-
-    // Handle foreground notifications
-    PushNotifications.addListener("pushNotificationReceived", async (notification) => {
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: notification.title,
-            body: notification.body,
-            id: Date.now(),
-            extra: notification.data,
-            schedule: { at: new Date(Date.now()) },
-            sound: 'default',
-            smallIcon: 'ic_notification',
-            largeIcon: 'ic_notification',
-            autoCancel: true,
-            ongoing: false,
-            importance: 4,
-            visibility: 1,
-            vibrate: true
-          }
-        ]
-      });
-    });
+    );
 
     // Handle local notification click
-    LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
-      const data = notification.notification.extra;
-      if (data.shopId) {
-        // Use history.pushState for smoother navigation
-        history.pushState(null, '', `/shop/${data.shopId}`);
-        // Force a page reload to ensure proper route handling
-        window.location.reload();
+    LocalNotifications.addListener(
+      "localNotificationActionPerformed",
+      (notification) => {
+        const data = notification.notification.extra;
+        if (data.shopId) {
+          // Use history.pushState for smoother navigation
+          history.pushState(null, "", `/shop/${data.shopId}`);
+          // Force a page reload to ensure proper route handling
+          window.location.reload();
+        }
       }
-    });
+    );
 
     PushNotifications.addListener("registrationError", (error) => {
       console.error("Error during registration for push notifications:", error);

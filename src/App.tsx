@@ -1,45 +1,66 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { PublicRoute } from './components/PublicRoute';
-import { LoadingScreen } from './components/LoadingScreen';
-import { Home } from './pages/Home';
-import { Login } from './pages/Login';
-import { SignUp } from './pages/SignUp';
-import { UserDashboard } from './pages/UserDashboard';
-import ShopDashboard from './pages/ShopDashboard';
-import { ShopDetails } from './pages/ShopDetails';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute";
+import { LoadingScreen } from "./components/LoadingScreen";
+import { Home } from "./pages/Home";
+import { Login } from "./pages/Login";
+import { SignUp } from "./pages/SignUp";
+import { UserDashboard } from "./pages/UserDashboard";
+import ShopDashboard from "./pages/ShopDashboard";
+import { ShopDetails } from "./pages/ShopDetails";
+import { PushNotifications } from "@capacitor/push-notifications";
+import { isNative } from "./utils/platform";
 
 export default function App() {
+  // Only set up push notifications in native environment
+  if (isNative()) {
+    PushNotifications.addListener(
+      "pushNotificationActionPerformed",
+      (notification) => {
+        console.log(
+          "Push notification clicked:",
+          notification.notification.data.shopId
+        );
+        const data = notification.notification.data;
+        if (data.shopId) {
+          window.location.href = `/shop/${data.shopId}`;
+        }
+      }
+    );
+  }
+
   return (
     <AuthProvider>
-      {({ loading }) => (
-        loading ? <LoadingScreen /> : (
+      {({ loading }) =>
+        loading ? (
+          <LoadingScreen />
+        ) : (
           <Router>
             <Routes>
-              <Route 
-                path="/" 
+              <Route
+                path="/"
                 element={
                   <PublicRoute>
                     <Home />
                   </PublicRoute>
-                } 
+                }
               />
-              <Route 
-                path="/login" 
+              <Route
+                path="/login"
                 element={
                   <PublicRoute>
                     <Login />
                   </PublicRoute>
-                } 
+                }
               />
-              <Route 
-                path="/signup" 
+              <Route
+                path="/signup"
                 element={
                   <PublicRoute>
                     <SignUp />
                   </PublicRoute>
-                } 
+                }
               />
               <Route
                 path="/dashboard"
@@ -68,7 +89,7 @@ export default function App() {
             </Routes>
           </Router>
         )
-      )}
+      }
     </AuthProvider>
   );
 }
