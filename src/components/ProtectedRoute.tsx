@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  userType: 'customer' | 'barber';
+  userType: 'customer' | 'barber' | 'any';
 }
 
 export function ProtectedRoute({ children, userType }: ProtectedRouteProps) {
@@ -13,7 +13,7 @@ export function ProtectedRoute({ children, userType }: ProtectedRouteProps) {
     return <Navigate to="/login" />;
   }
 
-  if (userType && user.type !== userType) {
+  if (userType !== 'any' && user.type !== userType) {
     return <Navigate to={user.type === 'customer' ? '/dashboard' : '/shop'} />;
   }
 

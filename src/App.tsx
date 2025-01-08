@@ -1,35 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { PublicRoute } from "./components/PublicRoute";
-import { LoadingScreen } from "./components/LoadingScreen";
-import { Home } from "./pages/Home";
-import { Login } from "./pages/Login";
-import { SignUp } from "./pages/SignUp";
-import { UserDashboard } from "./pages/UserDashboard";
-import ShopDashboard from "./pages/ShopDashboard";
-import { ShopDetails } from "./pages/ShopDetails";
-import { PushNotifications } from "@capacitor/push-notifications";
-import { isNative } from "./utils/platform";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { PublicRoute } from './components/PublicRoute';
+import { LoadingScreen } from './components/LoadingScreen';
+import { Home } from './pages/Home';
+import { Login } from './pages/Login';
+import { SignUp } from './pages/SignUp';
+import { ShopSetup } from './pages/ShopSetup';
+import { UserDashboard } from './pages/UserDashboard';
+import ShopDashboard from './pages/ShopDashboard'; // Changed to default import
+import { ShopDetails } from './pages/ShopDetails';
+import { Profile } from './pages/Profile';
 
 export default function App() {
-  // Only set up push notifications in native environment
-  if (isNative()) {
-    PushNotifications.addListener(
-      "pushNotificationActionPerformed",
-      (notification) => {
-        console.log(
-          "Push notification clicked:",
-          notification.notification.data.shopId
-        );
-        const data = notification.notification.data;
-        if (data.shopId) {
-          window.location.href = `/shop/${data.shopId}`;
-        }
-      }
-    );
-  }
-
   return (
     <AuthProvider>
       {({ loading }) =>
@@ -63,6 +46,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/shop-setup"
+                element={
+                  <PublicRoute>
+                    <ShopSetup />
+                  </PublicRoute>
+                }
+              />
+              <Route
                 path="/dashboard"
                 element={
                   <ProtectedRoute userType="customer">
@@ -83,6 +74,14 @@ export default function App() {
                 element={
                   <ProtectedRoute userType="customer">
                     <ShopDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute userType="any">
+                    <Profile />
                   </ProtectedRoute>
                 }
               />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferCard } from './OfferCard';
@@ -40,16 +40,18 @@ export function OffersList({
   const filteredOffers = useMemo(() => {
     let filtered = offers;
 
-    // Apply status filter
-    if (currentFilter === 'active') {
-      filtered = filtered.filter(isOfferActive);
-    } else if (currentFilter === 'inactive') {
-      filtered = filtered.filter(offer => !isOfferActive(offer));
-    }
-
-    // Filter out redeemed offers for customers
+    // For customers, only show active offers and hide redeemed ones
     if (user?.type === 'customer') {
-      filtered = filtered.filter(offer => !isOfferRedeemed(offer.id));
+      filtered = filtered.filter(offer => 
+        isOfferActive(offer) && !isOfferRedeemed(offer.id)
+      );
+    } else {
+      // For barbers, apply filter
+      if (currentFilter === 'active') {
+        filtered = filtered.filter(isOfferActive);
+      } else if (currentFilter === 'inactive') {
+        filtered = filtered.filter(offer => !isOfferActive(offer));
+      }
     }
 
     return filtered;
@@ -83,8 +85,8 @@ export function OffersList({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        {showActions && (
+      {showActions && (
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           <Button
             onClick={() => setShowForm(!showForm)}
             className="flex items-center gap-2 order-1 sm:order-2"
@@ -92,16 +94,16 @@ export function OffersList({
             <Plus className="h-4 w-4" />
             New Offer
           </Button>
-        )}
-        
-        <div className="order-2 sm:order-1">
-          <OfferFilters
-            currentFilter={currentFilter}
-            onFilterChange={setCurrentFilter}
-            counts={counts}
-          />
+          
+          <div className="order-2 sm:order-1">
+            <OfferFilters
+              currentFilter={currentFilter}
+              onFilterChange={setCurrentFilter}
+              counts={counts}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {showForm && (
         <div className="bg-gray-50 p-4 rounded-lg">
@@ -123,9 +125,7 @@ export function OffersList({
 
       {filteredOffers.length === 0 && (
         <div className="text-center text-gray-500 py-8">
-          {currentFilter === 'all' 
-            ? 'No offers available'
-            : `No ${currentFilter} offers available`}
+          No offers available
         </div>
       )}
     </div>

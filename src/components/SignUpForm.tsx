@@ -31,30 +31,26 @@ export function SignUpForm({ userType }: SignUpFormProps) {
     setError('');
     
     try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth, 
-        formData.email, 
-        formData.password
-      );
-      
-      await setDoc(doc(db, 'users', user.uid), {
-        email: formData.email,
-        name: formData.name,
-        type: userType,
-        createdAt: new Date().toISOString()
-      });
-
       if (userType === 'barber') {
-        const shopCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-        await setDoc(doc(db, 'shops', user.uid), {
-          name: '',
-          ownerId: user.uid,
-          code: shopCode,
+        // For barbers, navigate to shop setup with form data
+        navigate('/shop-setup', { state: formData });
+      } else {
+        // For customers, create account immediately
+        const { user } = await createUserWithEmailAndPassword(
+          auth, 
+          formData.email, 
+          formData.password
+        );
+        
+        await setDoc(doc(db, 'users', user.uid), {
+          email: formData.email,
+          name: formData.name,
+          type: 'customer',
           createdAt: new Date().toISOString()
         });
-      }
 
-      navigate('/');
+        navigate('/');
+      }
     } catch (err) {
       setError('Failed to create account');
     } finally {
@@ -101,7 +97,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
       />
 
       <LoadingButton type="submit" loading={loading} className="w-full">
-        {userType === 'barber' ? 'Create Barber Account' : 'Sign Up'}
+        {userType === 'barber' ? 'Continue to Shop Setup' : 'Sign Up'}
       </LoadingButton>
     </form>
   );

@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
-import { LogOut } from 'lucide-react';
+import { LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { isNative } from '../utils/platform';
+import { SideDrawer } from '../components/SideDrawer';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,16 +16,12 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
   const { logout } = useAuth();
   const navigate = useNavigate();
   const isNativeApp = isNative();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
-
-  // Extract name from title (assuming format "Welcome, Name" or "Welcome to your shop, Name")
-  const name = title.includes('Welcome') 
-    ? title.split(',').pop()?.trim() 
-    : title;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -33,13 +31,19 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
         <div className="px-4 py-2 pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Menu className="h-5 w-5 text-gray-600" />
+              </button>
               <Link to="/" className="flex-shrink-0">
                 <Logo className="scale-90" />
               </Link>
-              <div className="flex items-baseline gap-1.5">
+              {/* <div className="flex items-baseline gap-1.5">
                 <span className="text-sm text-gray-500">Hello,</span>
-                <span className="font-medium">{name}</span>
-              </div>
+                <span className="font-medium">{title.split(',')[1]?.trim()}</span>
+              </div> */}
             </div>
             
             <button
@@ -56,6 +60,8 @@ export function DashboardLayout({ children, title, showBackButton }: DashboardLa
       <div className="flex-1 px-4 py-6 mt-[68px]">
         {children}
       </div>
+
+      <SideDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </div>
   );
 }
