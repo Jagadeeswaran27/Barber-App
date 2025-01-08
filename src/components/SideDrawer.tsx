@@ -48,7 +48,7 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-4 border-b">
+        <div className="p-4 pt-8 border-b">
           <div className="flex items-center justify-between">
             <Logo className="scale-90" />
             <button
