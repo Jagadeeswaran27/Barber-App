@@ -1,5 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { auth } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,6 +12,13 @@ export function ProtectedRoute({ children, userType }: ProtectedRouteProps) {
   const { user } = useAuth();
 
   if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  // Check email verification
+  if (!auth.currentUser?.emailVerified) {
+    // Sign out user if email is not verified
+    signOut(auth);
     return <Navigate to="/login" />;
   }
 

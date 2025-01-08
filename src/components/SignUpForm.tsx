@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { LoadingButton } from './LoadingButton';
@@ -21,11 +21,6 @@ export function SignUpForm({ userType }: SignUpFormProps) {
   const [loading, setLoading] = useState(false);
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const navigate = useNavigate();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +49,9 @@ export function SignUpForm({ userType }: SignUpFormProps) {
           createdAt: new Date().toISOString()
         });
 
+        // Sign out the user immediately
+        await signOut(auth);
+
         setShowVerificationMessage(true);
         setTimeout(() => {
           navigate('/login');
@@ -64,6 +62,11 @@ export function SignUpForm({ userType }: SignUpFormProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (

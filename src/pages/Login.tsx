@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { AuthLayout } from '../components/AuthLayout';
@@ -31,9 +31,19 @@ export function Login() {
 
       // Check email verification
       if (!firebaseUser.emailVerified) {
-        // Resend verification email
-        await sendEmailVerification(firebaseUser);
-        setError('Please verify your email before logging in. A new verification email has been sent.');
+        try {
+          await sendEmailVerification(firebaseUser);
+          await signOut(auth);
+          setError('Please verify your email before logging in. A new verification email has been sent.');
+        } catch (verificationError: any) {
+          if (verificationError.code === 'auth/too-many-requests') {
+            await signOut(auth);
+            setError('Please verify your email before logging in. Check your inbox for the verification email.');
+          } else {
+            console.error('Verification error:', verificationError);
+            setError('Please verify your email before logging in.');
+          }
+        }
         setLoading(false);
         return;
       }
@@ -49,6 +59,7 @@ export function Login() {
         navigate(userData.type === 'customer' ? '/dashboard' : '/shop');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Invalid email or password');
     } finally {
       setLoading(false);
