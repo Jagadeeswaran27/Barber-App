@@ -13,12 +13,6 @@ import { ShopDetails } from "./pages/ShopDetails";
 import { Profile } from "./pages/Profile";
 import { isNative } from "./utils/platform";
 import { PushNotifications } from "@capacitor/push-notifications";
-import { setupIonicReact } from '@ionic/react';
-
-// Initialize Ionic React
-setupIonicReact({
-  mode: 'ios', // Use iOS styling for consistency
-});
 
 export default function App() {
   if (isNative()) {

@@ -5,10 +5,6 @@ import { setupStatusBar, setupKeyboard, isNative } from './utils/platform';
 import App from './App.tsx';
 import './index.css';
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
-
-
 // Request camera permission on app start
 async function requestInitialPermissions() {
   if (!isNative()) return;
