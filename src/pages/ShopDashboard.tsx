@@ -7,7 +7,8 @@ import { BarberChatSection } from '../components/chat/BarberChatSection';
 import { BottomNav } from '../components/BottomNav';
 import { ShopOffers } from './ShopOffers';
 import { ShopPrices } from './ShopPrices';
-import { Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users } from 'lucide-react';
+import { Share2, Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users } from 'lucide-react';
+import { Share } from '@capacitor/share';
 
 type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 
@@ -25,6 +26,20 @@ export default function ShopDashboard() {
       await navigator.clipboard.writeText(shopData.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleShare = async () => {
+    if (shopData?.code) {
+      try {
+        await Share.share({
+          title: `${shopData.name || 'BarberBook Shop'} Code`,
+          text: `Connect with ${shopData.name || 'my shop'} on BarberBook using code: ${shopData.code}`,
+          dialogTitle: 'Share Shop Code',
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
     }
   };
 
@@ -105,6 +120,13 @@ export default function ShopDashboard() {
                     ) : (
                       <Copy className="h-5 w-5 text-gray-600" />
                     )}
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Share code"
+                  >
+                    <Share2 className="h-5 w-5 text-gray-600" />
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
