@@ -30,7 +30,6 @@
 
 .keyboard-open .bottom-nav {
   position: absolute;
-  transform: translateY(-100vh);
   visibility: hidden;
 }
 
