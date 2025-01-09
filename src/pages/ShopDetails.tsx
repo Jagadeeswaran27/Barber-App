@@ -83,10 +83,8 @@ export function ShopDetails() {
                   <Store className="h-5 w-5 text-amber-600" />
                   <h3 className="font-medium">About the Shop</h3>
                 </div>
-                {shopDetails?.description ? (
+                {shopDetails?.description && (
                   <p className="text-gray-600">{shopDetails.description}</p>
-                ) : (
-                  <p className="text-gray-500 text-sm italic">No description available</p>
                 )}
               </div>
 

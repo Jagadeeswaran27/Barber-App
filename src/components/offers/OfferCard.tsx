@@ -86,7 +86,6 @@ export function OfferCard({
               <h3 className="font-medium text-gray-900">
                 {offer.title}
               </h3>
-              <p className="text-gray-600">{offer.description}</p>
             </div>
           </div>
 

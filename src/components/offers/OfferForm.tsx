@@ -4,7 +4,6 @@ import { LoadingButton } from '../LoadingButton';
 
 interface OfferFormData {
   title: string;
-  description: string;
   discount: number;
   startDate: string;
   endDate: string;
@@ -17,7 +16,6 @@ interface OfferFormProps {
 export function OfferForm({ onSubmit }: OfferFormProps) {
   const [formData, setFormData] = useState<OfferFormData>({
     title: '',
-    description: '',
     discount: 0,
     startDate: '',
     endDate: ''
@@ -52,7 +50,6 @@ export function OfferForm({ onSubmit }: OfferFormProps) {
       await onSubmit(formData);
       setFormData({
         title: '',
-        description: '',
         discount: 0,
         startDate: '',
         endDate: ''
@@ -76,15 +73,6 @@ export function OfferForm({ onSubmit }: OfferFormProps) {
         label="Title"
         name="title"
         value={formData.title}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
-
-      <Input
-        label="Description"
-        name="description"
-        value={formData.description}
         onChange={handleChange}
         required
         disabled={loading}
