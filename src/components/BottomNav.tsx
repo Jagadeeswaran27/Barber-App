@@ -1,8 +1,8 @@
-import { MessageSquare, Store, Tag } from 'lucide-react';
+import { MessageSquare, Store, Tag, IndianRupee } from 'lucide-react';
 
 interface BottomNavProps {
-  activeTab: 'details' | 'chat' | 'offers';
-  onTabChange: (tab: 'details' | 'chat' | 'offers') => void;
+  activeTab: 'details' | 'chat' | 'offers' | 'prices';
+  onTabChange: (tab: 'details' | 'chat' | 'offers' | 'prices') => void;
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
@@ -30,6 +30,17 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         >
           <Tag className="h-5 w-5" />
           <span className="text-xs">Offers</span>
+        </button>
+        <button
+          onClick={() => onTabChange('prices')}
+          className={`flex-1 flex flex-col items-center pt-3 ${
+            activeTab === 'prices' 
+              ? 'text-amber-600' 
+              : 'text-gray-600'
+          }`}
+        >
+          <IndianRupee className="h-5 w-5" />
+          <span className="text-xs">Prices</span>
         </button>
         <button
           onClick={() => onTabChange('chat')}

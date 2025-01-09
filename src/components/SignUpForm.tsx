@@ -52,10 +52,8 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         // Sign out the user immediately
         await signOut(auth);
 
-        setShowVerificationMessage(true);
-        setTimeout(() => {
           navigate('/login');
-        }, 5000);
+        
       }
     } catch (err) {
       setError('Failed to create account');

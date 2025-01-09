@@ -56,7 +56,7 @@ export function ChatWindow({
     <div className="flex flex-col h-full bg-gradient-to-b from-amber-50/20 to-white">
       <div 
         ref={messageContainerRef}
-        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3"
+        className="flex-1 overflow-y-auto px-4 lg:px-6 py-4 space-y-4"
       >
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">
@@ -69,35 +69,40 @@ export function ChatWindow({
               messages[index - 1].senderId !== message.senderId;
             const isLastInGroup = index === messages.length - 1 || 
               messages[index + 1].senderId !== message.senderId;
+            const isSentByCurrentUser = message.senderId === currentUserId;
             
             return (
               <div
                 key={message.id}
-                className={`flex ${message.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${isSentByCurrentUser ? 'justify-end' : 'justify-start'}`}
               >
-                <div className="max-w-[85%] sm:max-w-[75%] space-y-1">
+                <div className={`max-w-[85%] lg:max-w-[70%] space-y-1 ${
+                  isSentByCurrentUser ? 'items-end' : 'items-start'
+                }`}>
                   {isFirstInGroup && (
                     <span className={`text-xs font-medium ${
-                      message.senderId === currentUserId 
+                      isSentByCurrentUser 
                         ? 'text-right text-amber-700' 
                         : 'text-left text-gray-600'
-                    } block`}>
+                    } block px-2`}>
                       {message.senderName}
                     </span>
                   )}
                   <div
-                    className={`px-3 py-2 rounded-2xl ${
-                      message.senderId === currentUserId
+                    className={`px-4 py-2 rounded-2xl ${
+                      isSentByCurrentUser
                         ? 'bg-amber-600 text-white'
                         : 'bg-white shadow-sm border border-gray-100'
                     } ${!isLastInGroup ? 'mb-1' : ''}`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap break-words">
+                      {message.content}
+                    </p>
                   </div>
                   {isLastInGroup && (
                     <span className={`text-[10px] ${
-                      message.senderId === currentUserId ? 'text-right' : 'text-left'
-                    } block text-gray-400`}>
+                      isSentByCurrentUser ? 'text-right' : 'text-left'
+                    } block text-gray-400 px-2`}>
                       {formatMessageTime(message.timestamp)}
                     </span>
                   )}
@@ -109,7 +114,7 @@ export function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 border-t bg-white">
+      <div className="p-4 lg:p-6 border-t bg-white">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -122,7 +127,7 @@ export function ChatWindow({
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:hover:bg-amber-600"
+            className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:hover:bg-amber-600 flex-shrink-0"
           >
             <Send className="h-5 w-5" />
           </button>

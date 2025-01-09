@@ -38,7 +38,7 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-16rem)] max-h-[800px] min-h-[500px] bg-white rounded-lg border border-gray-100">
+    <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-16rem)] lg:h-[calc(100vh-12rem)] max-h-[800px] min-h-[500px] bg-white rounded-lg border border-gray-100">
       <div 
         className={`lg:w-80 h-full ${
           showMobileChat ? 'hidden lg:block' : 'block'
@@ -57,7 +57,7 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
       } flex-col`}>
         {selectedChatId ? (
           <>
-            <div className="flex items-center gap-3 p-3 border-b bg-white">
+            <div className="flex items-center gap-3 p-4 border-b bg-white">
               <button
                 onClick={handleBackToList}
                 className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"

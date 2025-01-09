@@ -6,9 +6,10 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { BarberChatSection } from '../components/chat/BarberChatSection';
 import { BottomNav } from '../components/BottomNav';
 import { ShopOffers } from './ShopOffers';
-import { Camera, MapPin, Scissors, Copy, CheckCircle2, Mail } from 'lucide-react';
+import { ShopPrices } from './ShopPrices';
+import { Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users } from 'lucide-react';
 
-type ActiveTab = 'details' | 'offers' | 'chat';
+type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 
 export default function ShopDashboard() {
   const { user } = useAuth();
@@ -31,8 +32,8 @@ export default function ShopDashboard() {
     switch (activeTab) {
       case 'details':
         return (
-          <div className="space-y-6 mt-4">
-            {/* Shop Banner with Overlay */}
+          <div className="space-y-6">
+            {/* Shop Banner */}
             <div className="relative h-48 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg overflow-hidden">
               {shopData?.image ? (
                 <>
@@ -65,66 +66,93 @@ export default function ShopDashboard() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg shadow text-center">
-                <p className="text-2xl font-bold text-amber-600">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="h-5 w-5 text-amber-600" />
+                  <h3 className="font-medium text-gray-600">Customers</h3>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">
                   {statsLoading ? '-' : stats.customerCount}
                 </p>
-                <p className="text-sm text-gray-600">Customers</p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow text-center">
-                <p className="text-2xl font-bold text-amber-600">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Tag className="h-5 w-5 text-amber-600" />
+                  <h3 className="font-medium text-gray-600">Active Offers</h3>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">
                   {statsLoading ? '-' : stats.activeOffersCount}
                 </p>
-                <p className="text-sm text-gray-600">Active Offers</p>
               </div>
             </div>
 
             {/* Shop Details Card */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="space-y-6">
-                {/* Shop Code Section */}
-                <div>
-                  <label className="text-sm text-gray-500">Shop Code</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <code className="flex-1 font-mono text-lg bg-gray-50 px-3 py-1.5 rounded-lg">
-                      {shopData?.code}
-                    </code>
-                    <button
-                      onClick={handleCopyCode}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="Copy code"
-                    >
-                      {copied ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      ) : (
-                        <Copy className="h-5 w-5 text-gray-600" />
-                      )}
-                    </button>
-                  </div>
+            <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-100">
+              {/* Shop Code Section */}
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Shop Code</h3>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 font-mono text-lg bg-gray-50 px-3 py-1.5 rounded-lg">
+                    {shopData?.code}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Copy code"
+                  >
+                    {copied ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <Copy className="h-5 w-5 text-gray-600" />
+                    )}
+                  </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Share this code with your customers to connect with your shop
+                </p>
+              </div>
 
-                {/* Barber Details */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                      <Scissors className="h-6 w-6 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{user.name}</h3>
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
-                        <Mail className="h-4 w-4" />
-                        <span>{user.email}</span>
-                      </div>
+              {/* Barber Details */}
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Barber Details</h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <Scissors className="h-6 w-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">{user.name}</h3>
+                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-0.5">
+                      <Mail className="h-4 w-4" />
+                      <span>{user.email}</span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Shop Description */}
+              {shopData?.description && (
+                <div className="p-4">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">About</h3>
+                  <p className="text-gray-600">{shopData.description}</p>
+                </div>
+              )}
+
+              {/* Working Hours */}
+              {shopData?.workingHours && (
+                <div className="p-4">
+                  <h3 className="text-sm font-medium text-gray-500 mb-2">Working Hours</h3>
+                  {/* Add WorkingHoursDisplay component here if needed */}
+                </div>
+              )}
             </div>
           </div>
         );
 
       case 'offers':
         return <ShopOffers />;
+
+      case 'prices':
+        return <ShopPrices />;
 
       case 'chat':
         return (
@@ -162,6 +190,16 @@ export default function ShopDashboard() {
             }`}
           >
             Offers
+          </button>
+          <button
+            onClick={() => setActiveTab('prices')}
+            className={`px-4 py-2 font-medium ${
+              activeTab === 'prices'
+                ? 'text-amber-600 border-b-2 border-amber-600'
+                : 'text-gray-600 hover:text-amber-600'
+            }`}
+          >
+            Prices
           </button>
           <button
             onClick={() => setActiveTab('chat')}
