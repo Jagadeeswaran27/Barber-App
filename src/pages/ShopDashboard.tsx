@@ -9,6 +9,7 @@ import { ShopOffers } from './ShopOffers';
 import { ShopPrices } from './ShopPrices';
 import { Share2, Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users } from 'lucide-react';
 import { Share } from '@capacitor/share';
+import { isNative } from '../utils/platform';
 
 type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 
@@ -30,14 +31,27 @@ export default function ShopDashboard() {
   };
 
   const handleShare = async () => {
-    if (shopData?.code) {
-      try {
+    if (!shopData?.code) return;
+
+    const shareText = `Connect with ${shopData.name || 'my shop'} on BarberBook using code: ${shopData.code}`;
+
+    try {
+      if (isNative()) {
+        // Use Capacitor Share on native platforms
         await Share.share({
           title: `${shopData.name || 'BarberBook Shop'} Code`,
-          text: `Connect with ${shopData.name || 'my shop'} on BarberBook using code: ${shopData.code}`,
+          text: shareText,
           dialogTitle: 'Share Shop Code',
         });
-      } catch (error) {
+      } else {
+        // On web, just copy to clipboard
+        await navigator.clipboard.writeText(shareText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (error) {
+      // Only log actual errors, not user cancellations
+      if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Error sharing:', error);
       }
     }
