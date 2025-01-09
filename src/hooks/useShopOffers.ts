@@ -3,36 +3,41 @@ import { db } from '../lib/firebase';
 import { withRetry } from '../utils/firebase';
 import { generateQRCode } from '../utils/qrCode';
 import type { Offer } from '../types/offer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useShopOffers(shopId: string) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchOffers = useCallback(async () => {
     if (!shopId) return;
     
-    const fetchOffers = async () => {
-      try {
-        const q = query(
-          collection(db, 'offers'),
-          where('shopId', '==', shopId)
-        );
-        const snapshot = await withRetry(() => getDocs(q));
-        setOffers(snapshot.docs.map(doc => ({ 
-          id: doc.id, 
-          ...doc.data() 
-        } as Offer)));
-      } catch (err) {
-        setError('Failed to load offers');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOffers();
+    try {
+      const q = query(
+        collection(db, 'offers'),
+        where('shopId', '==', shopId)
+      );
+      const snapshot = await withRetry(() => getDocs(q));
+      setOffers(snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      } as Offer)));
+    } catch (err) {
+      setError('Failed to load offers');
+    } finally {
+      setLoading(false);
+    }
   }, [shopId]);
+
+  useEffect(() => {
+    fetchOffers();
+  }, [fetchOffers]);
+
+  const refreshOffers = useCallback(async () => {
+    setLoading(true);
+    await fetchOffers();
+  }, [fetchOffers]);
 
   const createOffer = async (offerData: Omit<Offer, 'id' | 'shopId' | 'createdAt' | 'qrCode' | 'code'>) => {
     try {
@@ -84,6 +89,7 @@ export function useShopOffers(shopId: string) {
     error, 
     createOffer,
     deleteOffer,
-    redeemOffer
+    redeemOffer,
+    refreshOffers
   };
 }
