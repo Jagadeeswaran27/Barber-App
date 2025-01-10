@@ -64,7 +64,7 @@ export function PriceForm({ onSubmit }: PriceFormProps) {
 
       <Input
         label="Price (₹)"
-        type="number"
+        type="tel"
         name="price"
         value={formData.price}
         onChange={handleChange}
