@@ -7,13 +7,15 @@ import { BarberChatSection } from '../components/chat/BarberChatSection';
 import { BottomNav } from '../components/BottomNav';
 import { ShopOffers } from './ShopOffers';
 import { ShopPrices } from './ShopPrices';
-import { Share2, Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users } from 'lucide-react';
+import { Share2, Camera, MapPin, Scissors, Copy, CheckCircle2, Mail, Tag, Store, MessageSquare, IndianRupee, Users, Phone } from 'lucide-react';
 import { Share } from '@capacitor/share';
 import { isNative } from '../utils/platform';
+import { Link } from 'react-router-dom';
+import { WorkingHoursDisplay } from '../components/WorkingHoursDisplay';
 
 type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 
-export default function ShopDashboard() {
+export function ShopDashboard() {
   const { user } = useAuth();
   const { shopData, loading } = useShopData(user?.id || '');
   const { stats, loading: statsLoading } = useShopStats(user?.id || '');
@@ -37,20 +39,17 @@ export default function ShopDashboard() {
 
     try {
       if (isNative()) {
-        // Use Capacitor Share on native platforms
         await Share.share({
           title: `${shopData.name || 'BarberBook Shop'} Code`,
           text: shareText,
           dialogTitle: 'Share Shop Code',
         });
       } else {
-        // On web, just copy to clipboard
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
     } catch (error) {
-      // Only log actual errors, not user cancellations
       if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Error sharing:', error);
       }
@@ -95,7 +94,10 @@ export default function ShopDashboard() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              <Link
+                to="/connected-customers"
+                className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="h-5 w-5 text-amber-600" />
                   <h3 className="font-medium text-gray-600">Customers</h3>
@@ -103,8 +105,11 @@ export default function ShopDashboard() {
                 <p className="text-2xl font-bold text-gray-900">
                   {statsLoading ? '-' : stats.customerCount}
                 </p>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+              </Link>
+              <button
+                onClick={() => setActiveTab('offers')}
+                className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <Tag className="h-5 w-5 text-amber-600" />
                   <h3 className="font-medium text-gray-600">Active Offers</h3>
@@ -112,7 +117,7 @@ export default function ShopDashboard() {
                 <p className="text-2xl font-bold text-gray-900">
                   {statsLoading ? '-' : stats.activeOffersCount}
                 </p>
-              </div>
+              </button>
             </div>
 
             {/* Shop Details Card */}
@@ -148,18 +153,26 @@ export default function ShopDashboard() {
                 </p>
               </div>
 
-              {/* Barber Details */}
+              {/* Admin Details */}
               <div className="p-4">
-                <h3 className="text-sm font-medium text-gray-500 mb-3">Barber Details</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Admin Details</h3>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
                     <Scissors className="h-6 w-6 text-amber-600" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">{user.name}</h3>
-                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-0.5">
-                      <Mail className="h-4 w-4" />
-                      <span>{user.email}</span>
+                    <div className="space-y-1 mt-0.5">
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Mail className="h-4 w-4" />
+                        <span>{user.email}</span>
+                      </div>
+                      {user.phone && (
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <Phone className="h-4 w-4" />
+                          <span>{user.phone}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -177,7 +190,7 @@ export default function ShopDashboard() {
               {shopData?.workingHours && (
                 <div className="p-4">
                   <h3 className="text-sm font-medium text-gray-500 mb-2">Working Hours</h3>
-                  {/* Add WorkingHoursDisplay component here if needed */}
+                  <WorkingHoursDisplay hours={shopData.workingHours} />
                 </div>
               )}
             </div>

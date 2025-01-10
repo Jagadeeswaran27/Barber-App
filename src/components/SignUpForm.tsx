@@ -15,11 +15,12 @@ export function SignUpForm({ userType }: SignUpFormProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: ''
+    name: '',
+    phone: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,15 +46,19 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         await setDoc(doc(db, 'users', user.uid), {
           email: formData.email,
           name: formData.name,
+          phone: formData.phone,
           type: 'customer',
           createdAt: new Date().toISOString()
         });
 
         // Sign out the user immediately
         await signOut(auth);
-
-          navigate('/login');
         
+        // Show success toast and redirect after a delay
+        setShowSuccessToast(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       }
     } catch (err) {
       setError('Failed to create account');
@@ -87,6 +92,17 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         />
 
         <Input
+          label="Phone Number"
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          disabled={loading}
+          pattern="[0-9]{10}"
+        />
+
+        <Input
           label="Email"
           type="email"
           name="email"
@@ -111,11 +127,11 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         </LoadingButton>
       </form>
 
-      {showVerificationMessage && (
+      {showSuccessToast && (
         <Toast
-          message="Please check your email to verify your account. Redirecting to login..."
-          onClose={() => setShowVerificationMessage(false)}
-          duration={5000}
+          message="Account created successfully! Please check your email for verification."
+          onClose={() => setShowSuccessToast(false)}
+          duration={2000}
         />
       )}
     </>

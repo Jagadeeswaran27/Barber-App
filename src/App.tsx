@@ -8,15 +8,15 @@ import { Login } from "./pages/Login";
 import { SignUp } from "./pages/SignUp";
 import { ShopSetup } from "./pages/ShopSetup";
 import { UserDashboard } from "./pages/UserDashboard";
-import ShopDashboard from "./pages/ShopDashboard";
+import { ShopDashboard } from "./pages/ShopDashboard";
 import { ShopDetails } from "./pages/ShopDetails";
+import { ConnectedCustomers } from "./pages/ConnectedCustomers";
 import { Profile } from "./pages/Profile";
 import { isNative } from "./utils/platform";
 import { PushNotifications } from "@capacitor/push-notifications";
 
 export default function App() {
   if (isNative()) {
-    // Only initialize push notifications on native platforms
     PushNotifications.addListener(
       "pushNotificationActionPerformed",
       (notification) => {
@@ -26,11 +26,8 @@ export default function App() {
         );
         const data = notification.notification.data;
         if (data.shopId) {
-          // Navigate to shop details with offers tab
           history.pushState(null, "", `/shop/${data.shopId}`);
-          // Store the tab preference in sessionStorage
           sessionStorage.setItem("activeTab", "offers");
-          // Force a page reload to ensure proper route handling
           window.location.reload();
         }
       }
@@ -98,6 +95,14 @@ export default function App() {
                 element={
                   <ProtectedRoute userType="customer">
                     <ShopDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/connected-customers"
+                element={
+                  <ProtectedRoute userType="barber">
+                    <ConnectedCustomers />
                   </ProtectedRoute>
                 }
               />

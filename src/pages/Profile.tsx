@@ -5,12 +5,13 @@ import { LoadingButton } from '../components/LoadingButton';
 import { useAuth } from '../contexts/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { User, Mail, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Phone, CheckCircle2 } from 'lucide-react';
 
 export function Profile() {
-  const { user } = useAuth();
+  const { user, refreshUserData } = useAuth();
   const [formData, setFormData] = useState({
-    name: user?.name || ''
+    name: user?.name || '',
+    phone: user?.phone || ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,8 +32,10 @@ export function Profile() {
 
     try {
       await updateDoc(doc(db, 'users', user.id), {
-        name: formData.name
+        name: formData.name,
+        phone: formData.phone
       });
+      await refreshUserData(); // Refresh user data after update
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -77,6 +80,17 @@ export function Profile() {
               onChange={handleChange}
               required
               disabled={loading}
+            />
+
+            <Input
+              label="Phone Number"
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              pattern="[0-9]{10}"
             />
 
             <div>

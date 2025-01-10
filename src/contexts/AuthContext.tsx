@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
@@ -7,6 +7,7 @@ interface User {
   id: string;
   email: string;
   name: string;
+  phone: string;
   type: 'customer' | 'barber';
 }
 
@@ -14,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   logout: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,20 +28,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserData = useCallback(async (userId: string) => {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    const userData = userDoc.data();
+    
+    if (userData) {
+      setUser({
+        id: userId,
+        email: userData.email,
+        name: userData.name,
+        phone: userData.phone,
+        type: userData.type,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        const userData = userDoc.data();
-        
-        if (userData) {
-          setUser({
-            id: firebaseUser.uid,
-            email: userData.email,
-            name: userData.name,
-            type: userData.type,
-          });
-        }
+        await fetchUserData(firebaseUser.uid);
       } else {
         setUser(null);
       }
@@ -47,7 +54,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchUserData]);
+
+  const refreshUserData = useCallback(async () => {
+    if (auth.currentUser) {
+      await fetchUserData(auth.currentUser.uid);
+    }
+  }, [fetchUserData]);
 
   const logout = async () => {
     await signOut(auth);
@@ -55,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, refreshUserData }}>
       {children({ loading })}
     </AuthContext.Provider>
   );

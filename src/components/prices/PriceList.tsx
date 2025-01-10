@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Plus, Clock, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '../Button';
 import { PriceForm } from './PriceForm';
+import { Toast } from '../Toast';
 import type { PriceItem } from '../../types/price';
 
 interface PriceListProps {
@@ -12,10 +13,12 @@ interface PriceListProps {
 
 export function PriceList({ prices, onCreatePrice, onDeletePrice }: PriceListProps) {
   const [showForm, setShowForm] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleSubmit = async (data: any) => {
     await onCreatePrice(data);
     setShowForm(false);
+    setShowSuccessToast(true);
   };
 
   return (
@@ -49,12 +52,6 @@ export function PriceList({ prices, onCreatePrice, onDeletePrice }: PriceListPro
                   <span className="text-lg font-bold text-amber-600">₹{price.price}</span>
                 </div>
               </div>
-              {price.duration && (
-                <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
-                  <Clock className="h-4 w-4" />
-                  <span>{price.duration} mins</span>
-                </div>
-              )}
             </div>
             <button
               onClick={() => onDeletePrice(price.id)}
@@ -71,6 +68,13 @@ export function PriceList({ prices, onCreatePrice, onDeletePrice }: PriceListPro
           </div>
         )}
       </div>
+
+      {showSuccessToast && (
+        <Toast
+          message="Service added successfully!"
+          onClose={() => setShowSuccessToast(false)}
+        />
+      )}
     </div>
   );
 }
