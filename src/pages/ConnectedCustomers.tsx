@@ -18,7 +18,7 @@ export function ConnectedCustomers() {
   return (
     <DashboardLayout title="Connected Customers">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-4">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
@@ -53,15 +53,17 @@ export function ConnectedCustomers() {
                     <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <User className="h-6 w-6 text-amber-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-lg">{customer.name}</h3>
-                      <div className="mt-2 space-y-1">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Mail className="h-4 w-4" />
-                          <span className="text-sm">{customer.email}</span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium text-lg truncate">{customer.name}</h3>
+                      <div className="mt-2 space-y-1.5">
+                        <div className="flex items-center gap-2 text-gray-600 min-w-0">
+                          <Mail className="h-4 w-4 flex-shrink-0" />
+                          <span className="text-sm truncate block"> {customer.email.length > 20
+      ? `${customer.email.slice(0, 20)}...`
+      : customer.email}</span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
-                          <Phone className="h-4 w-4" />
+                          <Phone className="h-4 w-4 flex-shrink-0" />
                           <span className="text-sm">{customer.phone}</span>
                         </div>
                       </div>

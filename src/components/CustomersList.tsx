@@ -35,26 +35,48 @@ export function CustomersList({ customers, onClose }: CustomersListProps) {
               No customers connected yet
             </p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {customers.map(customer => (
                 <Link
                   key={customer.id}
                   to={`/customer/${customer.id}`}
-                  className="block p-4 border rounded-lg space-y-2 hover:border-amber-500 transition-colors"
+                  className="block bg-white border border-gray-200 rounded-lg p-3 hover:border-amber-500 hover:shadow-sm transition-all"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-amber-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">{customer.name}</h4>
-                        <p className="text-xs text-gray-500">
-                          Connected since {new Date(customer.connectionDate).toLocaleDateString()}
-                        </p>
+                  <div className="flex gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-amber-800 font-medium">
+                        {customer.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-medium text-gray-900 truncate">
+                            {customer.name}
+                          </h4>
+                          <div className="mt-0.5 space-y-0.5">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Mail className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <span className="text-xs text-gray-600 truncate block overflow-hidden">
+                                  {customer.email}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Phone className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                              <span className="text-xs text-gray-600">
+                                {customer.phone}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            Connected since {new Date(customer.connectionDate).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-amber-600 flex-shrink-0 mt-1" />
                       </div>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-amber-600" />
                   </div>
                 </Link>
               ))}
