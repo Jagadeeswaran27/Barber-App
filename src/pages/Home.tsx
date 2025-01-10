@@ -8,7 +8,7 @@ export function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white border-b z-10">
+      <header className="fixed pt-6 top-0 left-0 right-0 bg-white border-b z-10">
         <div className="px-4 py-3 flex items-center justify-between safe-top">
           <Logo className="scale-90" />
           <div className="flex gap-2">

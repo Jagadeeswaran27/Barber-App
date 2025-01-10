@@ -110,7 +110,7 @@ export function ShopSetup() {
       setShowSuccessToast(true);
       setTimeout(() => {
         navigate('/login');
-      }, 1500);
+      }, 2000);
     } catch (err) {
       console.error('Setup error:', err);
       setError('Failed to create account');

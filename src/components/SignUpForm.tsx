@@ -58,7 +58,7 @@ export function SignUpForm({ userType }: SignUpFormProps) {
         setShowSuccessToast(true);
         setTimeout(() => {
           navigate('/login');
-        }, 1500);
+        }, 2000);
       }
     } catch (err) {
       setError('Failed to create account');
