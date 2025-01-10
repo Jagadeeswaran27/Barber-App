@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db } from '../lib/firebase';
@@ -102,14 +102,17 @@ export function ShopSetup() {
         code: shopCode,
         createdAt: new Date().toISOString()
       });
+
+      // Sign out the user
+      await signOut(auth);
       
-       await signOut(auth);
       // Show success toast and redirect to login
       setShowSuccessToast(true);
       setTimeout(() => {
         navigate('/login');
       }, 1500);
     } catch (err) {
+      console.error('Setup error:', err);
       setError('Failed to create account');
     } finally {
       setLoading(false);
