@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { withRetry } from '../utils/firebase';
 import { generateQRCode } from '../utils/qrCode';
@@ -10,34 +10,35 @@ export function useShopOffers(shopId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOffers = useCallback(async () => {
+  // Set up real-time listener for offers
+  useEffect(() => {
     if (!shopId) return;
     
-    try {
-      const q = query(
-        collection(db, 'offers'),
-        where('shopId', '==', shopId)
-      );
-      const snapshot = await withRetry(() => getDocs(q));
-      setOffers(snapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data() 
-      } as Offer)));
-    } catch (err) {
-      setError('Failed to load offers');
-    } finally {
-      setLoading(false);
-    }
+    const q = query(
+      collection(db, 'offers'),
+      where('shopId', '==', shopId)
+    );
+
+    // Create real-time subscription
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const offersData = snapshot.docs.map(doc => ({ 
+          id: doc.id, 
+          ...doc.data() 
+        } as Offer));
+        setOffers(offersData);
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Error listening to offers:', err);
+        setError('Failed to load offers');
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [shopId]);
-
-  useEffect(() => {
-    fetchOffers();
-  }, [fetchOffers]);
-
-  const refreshOffers = useCallback(async () => {
-    setLoading(true);
-    await fetchOffers();
-  }, [fetchOffers]);
 
   const isWithinDateRange = (startDate: string, endDate: string) => {
     const now = new Date().getTime();
@@ -64,9 +65,7 @@ export function useShopOffers(shopId: string) {
       };
       
       const docRef = await withRetry(() => addDoc(collection(db, 'offers'), newOffer));
-      const offer = { id: docRef.id, ...newOffer };
-      setOffers(prev => [...prev, offer]);
-      return offer;
+      return { id: docRef.id, ...newOffer };
     } catch (err) {
       console.error('Error creating offer:', err);
       throw new Error('Failed to create offer');
@@ -76,9 +75,6 @@ export function useShopOffers(shopId: string) {
   const toggleOfferStatus = async (offerId: string, active: boolean) => {
     try {
       await updateDoc(doc(db, 'offers', offerId), { active });
-      setOffers(prev => prev.map(offer => 
-        offer.id === offerId ? { ...offer, active } : offer
-      ));
     } catch (err) {
       console.error('Error toggling offer status:', err);
       throw new Error('Failed to update offer status');
@@ -90,7 +86,6 @@ export function useShopOffers(shopId: string) {
     loading, 
     error, 
     createOffer,
-    toggleOfferStatus,
-    refreshOffers
+    toggleOfferStatus
   };
 }

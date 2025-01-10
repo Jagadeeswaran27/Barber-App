@@ -8,7 +8,6 @@ import { OffersList } from '../components/offers/OffersList';
 import { CustomerPriceList } from '../components/prices/CustomerPriceList';
 import { ChatSection } from '../components/chat/ChatSection';
 import { BottomNav } from '../components/BottomNav';
-import { PullToRefresh } from '../components/PullToRefresh';
 import { Scissors, Tag, Store, MessageSquare, Camera, MapPin, IndianRupee, Clock, Copy, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -46,21 +45,6 @@ export function ShopDetails() {
     }
   }, []);
 
-  const handleRefresh = useCallback(async () => {
-    switch (activeTab) {
-      case 'details':
-        await refreshShopDetails();
-        break;
-      case 'offers':
-        await refreshOffers();
-        break;
-      case 'prices':
-        await refreshPrices();
-        break;
-      // Chat tab uses real-time updates, so no manual refresh needed
-    }
-  }, [activeTab, refreshShopDetails, refreshOffers, refreshPrices]);
-
   const handleCopyCode = async () => {
     if (shopDetails?.code) {
       await navigator.clipboard.writeText(shopDetails.code);
@@ -70,159 +54,151 @@ export function ShopDetails() {
   };
 
   const renderTabContent = () => {
-    const content = (() => {
-      switch (activeTab) {
-        case 'details':
-          return (
-            <div className="space-y-6">
-              {/* Shop Banner */}
-              <div className="relative h-48 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg overflow-hidden">
-                {shopDetails?.image ? (
-                  <>
-                    <img
-                      src={shopDetails.image}
-                      alt={shopDetails.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Camera className="h-12 w-12 text-amber-300" />
+    switch (activeTab) {
+      case 'details':
+        return (
+          <div className="space-y-6">
+            {/* Shop Banner */}
+            <div className="relative h-48 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg overflow-hidden">
+              {shopDetails?.image ? (
+                <>
+                  <img
+                    src={shopDetails.image}
+                    alt={shopDetails.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Camera className="h-12 w-12 text-amber-300" />
+                </div>
+              )}
+              
+              {/* Shop Info Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h2 className="text-xl font-bold mb-1">
+                  {shopDetails?.name || 'Unnamed Shop'}
+                </h2>
+                {shopDetails?.location && (
+                  <div className="flex items-center gap-1.5 text-white/90">
+                    <MapPin className="h-4 w-4" />
+                    <p className="text-sm">{shopDetails.location}</p>
                   </div>
                 )}
-                
-                {/* Shop Info Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <h2 className="text-xl font-bold mb-1">
-                    {shopDetails?.name || 'Unnamed Shop'}
-                  </h2>
-                  {shopDetails?.location && (
-                    <div className="flex items-center gap-1.5 text-white/90">
-                      <MapPin className="h-4 w-4" />
-                      <p className="text-sm">{shopDetails.location}</p>
-                    </div>
-                  )}
+              </div>
+            </div>
+
+            {/* Shop Details */}
+            <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-100">
+              {/* Basic Info */}
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Store className="h-5 w-5 text-amber-600" />
+                  <h3 className="font-medium">About the Shop</h3>
+                </div>
+                {shopDetails?.description && (
+                  <p className="text-gray-600">{shopDetails.description}</p>
+                )}
+              </div>
+
+              {/* Shop Code */}
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Shop Code</h3>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 font-mono text-lg bg-gray-50 px-3 py-1.5 rounded-lg">
+                    {shopDetails?.code}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Copy code"
+                  >
+                    {copied ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <Copy className="h-5 w-5 text-gray-600" />
+                    )}
+                  </button>
                 </div>
               </div>
 
-              {/* Shop Details */}
-              <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-100">
-                {/* Basic Info */}
+              {/* Working Hours */}
+              {shopDetails?.workingHours && (
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Store className="h-5 w-5 text-amber-600" />
-                    <h3 className="font-medium">About the Shop</h3>
+                    <Clock className="h-5 w-5 text-amber-600" />
+                    <h3 className="font-medium">Working Hours</h3>
                   </div>
-                  {shopDetails?.description && (
-                    <p className="text-gray-600">{shopDetails.description}</p>
-                  )}
-                </div>
-
-                {/* Shop Code */}
-                <div className="p-4">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">Shop Code</h3>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 font-mono text-lg bg-gray-50 px-3 py-1.5 rounded-lg">
-                      {shopDetails?.code}
-                    </code>
-                    <button
-                      onClick={handleCopyCode}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="Copy code"
-                    >
-                      {copied ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      ) : (
-                        <Copy className="h-5 w-5 text-gray-600" />
-                      )}
-                    </button>
+                  <div className="space-y-2">
+                    {Object.entries(shopDetails.workingHours).map(([day, hours]) => (
+                      <div key={day} className="flex justify-between text-sm">
+                        <span className="text-gray-600">{day}</span>
+                        <span className="text-gray-900">
+                          {hours?.closed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                {/* Working Hours */}
-                {shopDetails?.workingHours && (
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock className="h-5 w-5 text-amber-600" />
-                      <h3 className="font-medium">Working Hours</h3>
-                    </div>
-                    <div className="space-y-2">
-                      {Object.entries(shopDetails.workingHours).map(([day, hours]) => (
-                        <div key={day} className="flex justify-between text-sm">
-                          <span className="text-gray-600">{day}</span>
-                          <span className="text-gray-900">
-                            {hours?.closed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-
-        case 'offers':
-          return (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Tag className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Special Offers</h3>
-              </div>
-              {offersLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <Scissors className="h-6 w-6 animate-spin text-amber-600" />
-                </div>
-              ) : (
-                <OffersList
-                  offers={offers}
-                  onCreateOffer={() => {}}
-                  onDeleteOffer={() => {}}
-                  onRedeemOffer={redeemOffer}
-                />
               )}
             </div>
-          );
+          </div>
+        );
 
-        case 'prices':
-          return (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <IndianRupee className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Service Prices</h3>
-              </div>
-              {pricesLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <Scissors className="h-6 w-6 animate-spin text-amber-600" />
-                </div>
-              ) : (
-                <CustomerPriceList prices={prices} />
-              )}
+      case 'offers':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Tag className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-semibold">Special Offers</h3>
             </div>
-          );
-
-        case 'chat':
-          return shopId ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <MessageSquare className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-semibold">Chat with Shop</h3>
+            {offersLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <Scissors className="h-6 w-6 animate-spin text-amber-600" />
               </div>
-              <ChatSection shopId={shopId} />
+            ) : (
+              <OffersList
+                offers={offers}
+                onCreateOffer={() => {}}
+                onDeleteOffer={() => {}}
+                onRedeemOffer={redeemOffer}
+              />
+            )}
+          </div>
+        );
+
+      case 'prices':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <IndianRupee className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-semibold">Service Prices</h3>
             </div>
-          ) : null;
+            {pricesLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <Scissors className="h-6 w-6 animate-spin text-amber-600" />
+              </div>
+            ) : (
+              <CustomerPriceList prices={prices} />
+            )}
+          </div>
+        );
 
-        default:
-          return null;
-      }
-    })();
+      case 'chat':
+        return shopId ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-semibold">Chat with Shop</h3>
+            </div>
+            <ChatSection shopId={shopId} />
+          </div>
+        ) : null;
 
-    return (
-      <PullToRefresh onRefresh={handleRefresh}>
-        {content}
-      </PullToRefresh>
-    );
+      default:
+        return null;
+    }
   };
 
   return (
