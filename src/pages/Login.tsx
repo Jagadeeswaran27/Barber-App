@@ -7,6 +7,7 @@ import { AuthLayout } from '../components/AuthLayout';
 import { LoadingButton } from '../components/LoadingButton';
 import { Input } from '../components/Input';
 import { initializePushNotifications } from '../utils/fcm';
+import { isNative } from '../utils/platform';
 
 export function Login() {
   const [formData, setFormData] = useState({
@@ -91,6 +92,7 @@ export function Login() {
             onChange={handleChange}
             required
             disabled={loading}
+            autoComplete="username"
           />
 
           <Input
@@ -101,6 +103,7 @@ export function Login() {
             onChange={handleChange}
             required
             disabled={loading}
+            autoComplete="current-password"
           />
 
           <LoadingButton type="submit" loading={loading} className="w-full">
