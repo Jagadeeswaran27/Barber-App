@@ -1,24 +1,26 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db } from '../lib/firebase';
 import { AuthLayout } from '../components/AuthLayout';
 import { Input } from '../components/Input';
 import { LoadingButton } from '../components/LoadingButton';
+import { Toast } from '../components/Toast';
 import { MapPin, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface LocationState {
   email: string;
   password: string;
   name: string;
+  phone: string;
 }
 
 export function ShopSetup() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { email, password, name } = location.state as LocationState;
+  const { email, password, name, phone } = location.state as LocationState;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -29,6 +31,7 @@ export function ShopSetup() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,6 +75,9 @@ export function ShopSetup() {
       // Create user account
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Send verification email
+      await sendEmailVerification(user);
+
       // Upload image and get URL
       const imageUrl = await uploadImage(selectedImage, user.uid);
       
@@ -82,6 +88,7 @@ export function ShopSetup() {
       await setDoc(doc(db, 'users', user.uid), {
         email,
         name,
+        phone,
         type: 'barber',
         createdAt: new Date().toISOString()
       });
@@ -96,8 +103,16 @@ export function ShopSetup() {
         createdAt: new Date().toISOString()
       });
 
-      navigate('/shop');
+      // Sign out the user
+      await signOut(auth);
+      
+      // Show success toast and redirect to login
+      setShowSuccessToast(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
+      console.error('Setup error:', err);
       setError('Failed to create account');
     } finally {
       setLoading(false);
@@ -194,6 +209,14 @@ export function ShopSetup() {
             Complete Setup
           </LoadingButton>
         </form>
+
+        {showSuccessToast && (
+          <Toast
+            message="Account created! Please check your email for verification."
+            onClose={() => setShowSuccessToast(false)}
+            duration={2000}
+          />
+        )}
       </div>
     </AuthLayout>
   );

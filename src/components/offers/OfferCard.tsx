@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Percent, Calendar, Trash2, QrCode, Copy, CheckCircle2 } from 'lucide-react';
+import { Calendar, QrCode, Copy, CheckCircle2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferRedemption } from './OfferRedemption';
 import { Toast } from '../Toast';
@@ -9,14 +9,14 @@ import type { Offer } from '../../types/offer';
 
 interface OfferCardProps {
   offer: Offer;
-  onDelete?: (offerId: string) => Promise<void>;
+  onToggleStatus?: (offerId: string, active: boolean) => Promise<void>;
   showActions?: boolean;
   onRedeem?: () => Promise<void>;
 }
 
 export function OfferCard({ 
   offer, 
-  onDelete, 
+  onToggleStatus,
   showActions = false,
   onRedeem 
 }: OfferCardProps) {
@@ -25,6 +25,9 @@ export function OfferCard({
   const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [showStatusToast, setShowStatusToast] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(undefined, {
@@ -37,16 +40,39 @@ export function OfferCard({
   };
 
   const isActive = () => {
+    if (!offer.active) return false;
     const now = new Date().getTime();
     const start = new Date(offer.startDate).getTime();
     const end = new Date(offer.endDate).getTime();
     return now >= start && now <= end;
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const getStatusColor = () => {
+    if (!offer.active) return 'bg-gray-100 text-gray-800';
+    if (isActive()) return 'bg-green-100 text-green-800';
+    return 'bg-amber-100 text-amber-800';
+  };
+
+  const getStatusText = () => {
+    if (!offer.active) return 'Inactive';
+    if (isActive()) return 'Active';
+    const now = new Date().getTime();
+    const start = new Date(offer.startDate).getTime();
+    return now < start ? 'Scheduled' : 'Expired';
+  };
+
+  const handleToggleStatus = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onDelete) {
-      await onDelete(offer.id);
+    if (!onToggleStatus || updating) return;
+    
+    setUpdating(true);
+    try {
+      await onToggleStatus(offer.id, !offer.active);
+      setStatusMessage(offer.active ? 'Offer marked as inactive' : 'Offer marked as active');
+      setShowStatusToast(true);
+      setTimeout(() => setShowStatusToast(false), 3000);
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -69,26 +95,28 @@ export function OfferCard({
     <>
       <div className="bg-white border border-gray-200 rounded-lg p-4 relative">
         {showActions && (
-          <button
-            onClick={handleDelete}
-            className="absolute top-4 right-4 text-gray-400 hover:text-red-600 transition-colors"
-          >
-            <Trash2 className="h-5 w-5" />
-          </button>
+          <div className="absolute top-4 right-4">
+            <button
+              onClick={handleToggleStatus}
+              className={`p-1 rounded-lg transition-all ${
+                updating ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+              }`}
+              disabled={updating}
+              title={offer.active ? 'Mark as inactive' : 'Mark as active'}
+            >
+              {offer.active ? (
+                <ToggleRight className="h-6 w-6 text-green-600" />
+              ) : (
+                <ToggleLeft className="h-6 w-6 text-gray-400" />
+              )}
+            </button>
+          </div>
         )}
 
         <div className="space-y-2">
-          <div className="flex items-start gap-3">
-            <div className="bg-amber-100 rounded-lg p-2">
-              <Percent className="h-5 w-5 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="font-medium text-gray-900">
-                {offer.title}
-              </h3>
-              <p className="text-gray-600">{offer.description}</p>
-            </div>
-          </div>
+          <h3 className="font-medium text-gray-900 pr-20">
+            {offer.title}
+          </h3>
 
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Calendar className="h-4 w-4" />
@@ -97,19 +125,10 @@ export function OfferCard({
             </span>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
-            <span className="text-2xl font-bold text-amber-600">
-              {offer.discount}% OFF
+          <div className="flex items-center justify-end mt-4">
+            <span className={`${getStatusColor()} text-sm px-3 py-1 rounded-full`}>
+              {getStatusText()}
             </span>
-            {isActive() ? (
-              <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                Active
-              </span>
-            ) : (
-              <span className="bg-gray-100 text-gray-800 text-sm px-3 py-1 rounded-full">
-                Inactive
-              </span>
-            )}
           </div>
 
           {/* Show QR code and offer code for barbers */}
@@ -182,8 +201,15 @@ export function OfferCard({
 
       {showSuccessToast && (
         <Toast
-          message={`Successfully redeemed ${offer.discount}% discount!`}
+          message="Offer redeemed successfully!"
           onClose={() => setShowSuccessToast(false)}
+        />
+      )}
+
+      {showStatusToast && (
+        <Toast
+          message={statusMessage}
+          onClose={() => setShowStatusToast(false)}
         />
       )}
     </>

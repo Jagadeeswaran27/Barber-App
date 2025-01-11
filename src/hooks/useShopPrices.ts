@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { PriceItem } from '../types/price';
@@ -8,29 +8,34 @@ export function useShopPrices(shopId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchPrices = useCallback(async () => {
     if (!shopId) return;
     
-    const fetchPrices = async () => {
-      try {
-        const q = query(
-          collection(db, 'prices'),
-          where('shopId', '==', shopId)
-        );
-        const snapshot = await getDocs(q);
-        setPrices(snapshot.docs.map(doc => ({ 
-          id: doc.id, 
-          ...doc.data() 
-        } as PriceItem)));
-      } catch (err) {
-        setError('Failed to load prices');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPrices();
+    try {
+      const q = query(
+        collection(db, 'prices'),
+        where('shopId', '==', shopId)
+      );
+      const snapshot = await getDocs(q);
+      setPrices(snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      } as PriceItem)));
+    } catch (err) {
+      setError('Failed to load prices');
+    } finally {
+      setLoading(false);
+    }
   }, [shopId]);
+
+  useEffect(() => {
+    fetchPrices();
+  }, [fetchPrices]);
+
+  const refreshPrices = useCallback(async () => {
+    setLoading(true);
+    await fetchPrices();
+  }, [fetchPrices]);
 
   const createPrice = async (priceData: Omit<PriceItem, 'id' | 'shopId' | 'createdAt'>) => {
     try {
@@ -65,6 +70,7 @@ export function useShopPrices(shopId: string) {
     loading, 
     error, 
     createPrice,
-    deletePrice
+    deletePrice,
+    refreshPrices
   };
 }

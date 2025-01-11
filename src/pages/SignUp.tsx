@@ -11,7 +11,7 @@ export function SignUp() {
     <AuthLayout>
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
         <h2 className="text-2xl font-bold text-center mb-2">
-          {isBarber ? 'Create Your Barber Account' : 'Create Your Account'}
+          {isBarber ? 'Create Your Admin Account' : 'Create Your Account'}
         </h2>
         
         <div className="flex gap-4 justify-center mb-6">
@@ -27,7 +27,7 @@ export function SignUp() {
             className="text-sm"
             onClick={() => setIsBarber(true)}
           >
-            Sign up as Barber
+            Sign up as Admin
           </Button>
         </div>
 

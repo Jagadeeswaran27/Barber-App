@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferCard } from './OfferCard';
 import { OfferForm } from './OfferForm';
 import { OfferFilters } from './OfferFilters';
+import { Toast } from '../Toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOfferRedemptions } from '../../hooks/useOfferRedemptions';
 import type { Offer } from '../../types/offer';
@@ -13,7 +14,7 @@ type FilterStatus = 'all' | 'active' | 'inactive';
 interface OffersListProps {
   offers: Offer[];
   onCreateOffer: (data: any) => Promise<void>;
-  onDeleteOffer: (offerId: string) => Promise<void>;
+  onToggleStatus?: (offerId: string, active: boolean) => Promise<void>;
   onRedeemOffer?: (offerId: string) => Promise<void>;
   showActions?: boolean;
 }
@@ -21,54 +22,49 @@ interface OffersListProps {
 export function OffersList({ 
   offers, 
   onCreateOffer, 
-  onDeleteOffer,
+  onToggleStatus,
   onRedeemOffer,
   showActions = false 
 }: OffersListProps) {
   const [showForm, setShowForm] = useState(false);
   const [currentFilter, setCurrentFilter] = useState<FilterStatus>('all');
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { user } = useAuth();
   const { isOfferRedeemed, markAsRedeemed } = useOfferRedemptions(user?.id || '');
 
   const isOfferActive = (offer: Offer) => {
+    if (!offer.active) return false;
     const now = new Date().getTime();
     const start = new Date(offer.startDate).getTime();
     const end = new Date(offer.endDate).getTime();
     return now >= start && now <= end;
   };
 
-  const filteredOffers = useMemo(() => {
-    let filtered = offers;
-
-    // For customers, only show active offers and hide redeemed ones
+  const filteredOffers = offers.filter(offer => {
     if (user?.type === 'customer') {
-      filtered = filtered.filter(offer => 
-        isOfferActive(offer) && !isOfferRedeemed(offer.id)
-      );
-    } else {
-      // For barbers, apply filter
-      if (currentFilter === 'active') {
-        filtered = filtered.filter(isOfferActive);
-      } else if (currentFilter === 'inactive') {
-        filtered = filtered.filter(offer => !isOfferActive(offer));
-      }
+      return isOfferActive(offer) && !isOfferRedeemed(offer.id);
     }
+    
+    switch (currentFilter) {
+      case 'active':
+        return isOfferActive(offer);
+      case 'inactive':
+        return !isOfferActive(offer);
+      default:
+        return true;
+    }
+  });
 
-    return filtered;
-  }, [offers, currentFilter, user?.type, isOfferRedeemed]);
-
-  const counts = useMemo(() => {
-    const active = offers.filter(isOfferActive).length;
-    return {
-      active,
-      inactive: offers.length - active,
-      total: offers.length
-    };
-  }, [offers]);
+  const counts = {
+    active: offers.filter(isOfferActive).length,
+    inactive: offers.length - offers.filter(isOfferActive).length,
+    total: offers.length
+  };
 
   const handleSubmit = async (data: any) => {
     await onCreateOffer(data);
     setShowForm(false);
+    setShowSuccessToast(true);
   };
 
   const handleRedeem = async (offerId: string) => {
@@ -116,7 +112,7 @@ export function OffersList({
           <OfferCard
             key={offer.id}
             offer={offer}
-            onDelete={showActions ? onDeleteOffer : undefined}
+            onToggleStatus={showActions ? onToggleStatus : undefined}
             onRedeem={user?.type === 'customer' ? () => handleRedeem(offer.id) : undefined}
             showActions={showActions}
           />
@@ -127,6 +123,13 @@ export function OffersList({
         <div className="text-center text-gray-500 py-8">
           No offers available
         </div>
+      )}
+
+      {showSuccessToast && (
+        <Toast
+          message="New offer created successfully!"
+          onClose={() => setShowSuccessToast(false)}
+        />
       )}
     </div>
   );

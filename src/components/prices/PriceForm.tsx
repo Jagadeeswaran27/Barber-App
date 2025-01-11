@@ -5,7 +5,6 @@ import { LoadingButton } from '../LoadingButton';
 interface PriceFormData {
   name: string;
   price: number;
-  duration?: number;
 }
 
 interface PriceFormProps {
@@ -16,7 +15,6 @@ export function PriceForm({ onSubmit }: PriceFormProps) {
   const [formData, setFormData] = useState<PriceFormData>({
     name: '',
     price: 0,
-    duration: 30,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,7 +23,7 @@ export function PriceForm({ onSubmit }: PriceFormProps) {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'price' || name === 'duration' ? Number(value) : value
+      [name]: name === 'price' ? Number(value) : value
     }));
   };
 
@@ -39,7 +37,6 @@ export function PriceForm({ onSubmit }: PriceFormProps) {
       setFormData({
         name: '',
         price: 0,
-        duration: 30,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add price item');
@@ -67,23 +64,12 @@ export function PriceForm({ onSubmit }: PriceFormProps) {
 
       <Input
         label="Price (₹)"
-        type="number"
+        type="tel"
         name="price"
         value={formData.price}
         onChange={handleChange}
         required
         min={0}
-      />
-
-      <Input
-        label="Duration (Minutes)"
-        type="number"
-        name="duration"
-        value={formData.duration}
-        onChange={handleChange}
-        required
-        min={5}
-        step={5}
       />
 
       <LoadingButton type="submit" loading={loading}>

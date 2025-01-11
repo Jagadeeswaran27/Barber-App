@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useShopDetails } from '../hooks/useShopDetails';
 import { useShopOffers } from '../hooks/useShopOffers';
 import { useShopPrices } from '../hooks/useShopPrices';
@@ -16,9 +16,23 @@ type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 export function ShopDetails() {
   const { user } = useAuth();
   const { shopId } = useParams();
-  const { shopDetails, loading, error } = useShopDetails(shopId || '');
-  const { offers, loading: offersLoading, redeemOffer } = useShopOffers(shopId || '');
-  const { prices, loading: pricesLoading } = useShopPrices(shopId || '');
+  const { 
+    shopDetails, 
+    loading, 
+    error,
+    refreshShopDetails 
+  } = useShopDetails(shopId || '');
+  const { 
+    offers, 
+    loading: offersLoading, 
+    redeemOffer,
+    refreshOffers 
+  } = useShopOffers(shopId || '');
+  const { 
+    prices, 
+    loading: pricesLoading,
+    refreshPrices 
+  } = useShopPrices(shopId || '');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
   const [copied, setCopied] = useState(false);
 
@@ -83,10 +97,8 @@ export function ShopDetails() {
                   <Store className="h-5 w-5 text-amber-600" />
                   <h3 className="font-medium">About the Shop</h3>
                 </div>
-                {shopDetails?.description ? (
+                {shopDetails?.description && (
                   <p className="text-gray-600">{shopDetails.description}</p>
-                ) : (
-                  <p className="text-gray-500 text-sm italic">No description available</p>
                 )}
               </div>
 

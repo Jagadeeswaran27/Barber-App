@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -14,27 +14,32 @@ export function useShopDetails(shopId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchShopDetails = useCallback(async () => {
     if (!shopId) return;
 
-    const fetchShopDetails = async () => {
-      try {
-        const shopDoc = await getDoc(doc(db, 'shops', shopId));
-        if (shopDoc.exists()) {
-          setShopDetails({
-            id: shopDoc.id,
-            ...shopDoc.data() as Omit<ShopDetails, 'id'>
-          });
-        }
-      } catch (err) {
-        setError('Failed to load shop details');
-      } finally {
-        setLoading(false);
+    try {
+      const shopDoc = await getDoc(doc(db, 'shops', shopId));
+      if (shopDoc.exists()) {
+        setShopDetails({
+          id: shopDoc.id,
+          ...shopDoc.data() as Omit<ShopDetails, 'id'>
+        });
       }
-    };
-
-    fetchShopDetails();
+    } catch (err) {
+      setError('Failed to load shop details');
+    } finally {
+      setLoading(false);
+    }
   }, [shopId]);
 
-  return { shopDetails, loading, error };
+  useEffect(() => {
+    fetchShopDetails();
+  }, [fetchShopDetails]);
+
+  const refreshShopDetails = useCallback(async () => {
+    setLoading(true);
+    await fetchShopDetails();
+  }, [fetchShopDetails]);
+
+  return { shopDetails, loading, error, refreshShopDetails };
 }

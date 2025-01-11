@@ -20,6 +20,7 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
   const { redeemOffer, loading } = useOfferRedemption(offer.id, customerId);
   const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [showScanSuccessToast, setShowScanSuccessToast] = useState(false);
 
   const handleRedeem = async (code: string) => {
     setError(null);
@@ -36,6 +37,15 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
     }
 
     try {
+      // Show scan success toast first
+      if (mode === 'scan') {
+        setShowScanSuccessToast(true);
+        // Close scanner
+        setMode(null);
+        // Wait for toast to show before proceeding
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
       await redeemOffer(offer.shopId);
       await onRedeem();
       setMode(null);
@@ -137,6 +147,14 @@ export function OfferRedemption({ offer, customerId, onRedeem }: OfferRedemption
           </div>
         )}
       </div>
+
+      {showScanSuccessToast && (
+        <Toast 
+          message="QR code scanned successfully!" 
+          onClose={() => setShowScanSuccessToast(false)}
+          duration={2000}
+        />
+      )}
 
       {showToast && (
         <Toast 
