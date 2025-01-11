@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.nebula.barberapp',
-  appName: 'BarberBook',
+  appId: 'com.nebula.chopncharm',
+  appName: 'ChopNCharm',
   webDir: 'dist',
   server: {
     androidScheme: 'https'
