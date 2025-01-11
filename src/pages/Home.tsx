@@ -16,7 +16,7 @@ export function Home() {
           <div className="relative">
             {/* Curved white background */}
             <div 
-              className="absolute top-0 left-0 right-0 h-32 bg-white"
+              className="absolute top-0 left-0 right-0 h-24 bg-white"
               style={{
                 borderTopLeftRadius: '3rem',
                 borderTopRightRadius: '3rem',
@@ -25,27 +25,27 @@ export function Home() {
             />
             
             {/* Buttons container */}
-            <div className="relative bg-white px-6 pb-12 space-y-4">
+            <div className="relative bg-white px-6 pb-8 space-y-3">
               {/* Welcome Text and Description */}
-              <div className="pt-16 text-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">
+              <div className="pt-12 text-center">
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">
                   Welcome
                 </h1>
-                <p className="text-gray-600 text-lg mb-8 px-4">
+                <p className="text-gray-600 text-lg mb-6 px-4">
                   The ultimate platform for barbers, beauticians, and salon professionals to manage their business
                 </p>
               </div>
 
               <Link 
                 to="/login" 
-                className="block w-full py-4 text-center text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
+                className="block w-full py-3 text-center text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
               >
                 Sign In
               </Link>
               
               <Link 
                 to="/signup"
-                className="block w-full py-4 text-center text-xl font-semibold text-white bg-amber-500 rounded-2xl hover:bg-amber-600 transition-colors"
+                className="block w-full py-3 text-center text-xl font-semibold text-white bg-amber-500 rounded-2xl hover:bg-amber-600 transition-colors"
               >
                 Sign Up
               </Link>
