@@ -3,12 +3,12 @@ import { Logo } from '../components/Logo';
 
 export function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-400 to-amber-600 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-amber-500 to-amber-600 relative overflow-hidden">
       {/* Content */}
-      <div className="relative min-h-screen flex flex-col items-center px-8 pt-20">
+      <div className="relative min-h-screen flex flex-col items-center px-6 sm:px-8 pt-16 sm:pt-20">
         {/* Logo */}
         <div className="mb-auto">
-          <Logo className="text-white scale-150" />
+          <Logo variant="home" className="text-white" />
         </div>
 
         {/* White curved section with buttons */}
@@ -25,27 +25,27 @@ export function Home() {
             />
             
             {/* Buttons container */}
-            <div className="relative bg-white px-6 pb-8 space-y-3">
+            <div className="relative bg-white px-4 sm:px-6 pb-8 space-y-3">
               {/* Welcome Text and Description */}
               <div className="pt-12 text-center">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">
                   Welcome
                 </h1>
-                <p className="text-gray-600 text-lg mb-6 px-4">
+                <p className="text-gray-600 text-base sm:text-lg mb-6 px-2 sm:px-4">
                   The ultimate platform for barbers, beauticians, and salon professionals to manage their business
                 </p>
               </div>
 
               <Link 
                 to="/login" 
-                className="block w-full py-3 text-center text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
+                className="block w-full py-2.5 sm:py-3 text-center text-lg sm:text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
               >
                 Sign In
               </Link>
               
               <Link 
                 to="/signup"
-                className="block w-full py-3 text-center text-xl font-semibold text-white bg-amber-500 rounded-2xl hover:bg-amber-600 transition-colors"
+                className="block w-full py-2.5 sm:py-3 text-center text-lg sm:text-xl font-semibold text-white bg-amber-600 rounded-2xl hover:bg-amber-700 transition-colors"
               >
                 Sign Up
               </Link>
