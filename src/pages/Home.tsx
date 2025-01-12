@@ -1,9 +1,19 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '../components/Logo';
+import barberIllustration from '../assets/barber.svg';
 
 export function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-500 to-amber-600 relative overflow-hidden">
+      {/* Illustration */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10">
+        <img 
+          src={barberIllustration}
+          alt="Barber illustration"
+          className="w-full max-w-4xl"
+        />
+      </div>
+
       {/* Content */}
       <div className="relative min-h-screen flex flex-col items-center px-6 sm:px-8 pt-16 sm:pt-20">
         {/* Logo */}
