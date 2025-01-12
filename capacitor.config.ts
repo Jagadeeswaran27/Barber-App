@@ -1,23 +1,27 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'com.nebula.barberapp',
-  appName: 'BarberBook',
-  webDir: 'dist',
+  appId: "com.nebula.chopncharm",
+  appName: "ChopNCharm",
+  webDir: "dist",
   server: {
-    androidScheme: 'https'
+    androidScheme: "https",
   },
   plugins: {
     Keyboard: {
-      resize: 'body',
-      style: 'dark',
-      resizeOnFullScreen: true
+      resize: "body",
+      style: "dark",
+      resizeOnFullScreen: true,
     },
     StatusBar: {
-      style: 'dark',
-      backgroundColor: '#ffffff'
-    }
-  }
+      style: "dark",
+      backgroundColor: "#ffffff",
+    },
+    CapacitorAssets: {
+      iconSource: "./assets/logo.png",
+      splashSource: "./assets/splash.png",
+    },
+  },
 };
 
 export default config;
