@@ -45,7 +45,7 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] -m-6">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] -mx-3">
       {/* Chat List */}
       <div 
         className={`lg:w-80 h-full ${
