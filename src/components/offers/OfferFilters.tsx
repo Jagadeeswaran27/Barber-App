@@ -16,13 +16,6 @@ export function OfferFilters({ currentFilter, onFilterChange, counts }: OfferFil
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button
-        variant={currentFilter === 'all' ? 'primary' : 'secondary'}
-        onClick={() => onFilterChange('all')}
-        className="text-sm"
-      >
-        All ({counts.total})
-      </Button>
-      <Button
         variant={currentFilter === 'active' ? 'primary' : 'secondary'}
         onClick={() => onFilterChange('active')}
         className="text-sm"
@@ -35,6 +28,13 @@ export function OfferFilters({ currentFilter, onFilterChange, counts }: OfferFil
         className="text-sm"
       >
         Inactive ({counts.inactive})
+      </Button>
+      <Button
+        variant={currentFilter === 'all' ? 'primary' : 'secondary'}
+        onClick={() => onFilterChange('all')}
+        className="text-sm"
+      >
+        All ({counts.total})
       </Button>
     </div>
   );

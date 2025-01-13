@@ -27,7 +27,7 @@ export function OffersList({
   showActions = false 
 }: OffersListProps) {
   const [showForm, setShowForm] = useState(false);
-  const [currentFilter, setCurrentFilter] = useState<FilterStatus>('all');
+  const [currentFilter, setCurrentFilter] = useState<FilterStatus>('active');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { user } = useAuth();
   const { isOfferRedeemed, markAsRedeemed } = useOfferRedemptions(user?.id || '');

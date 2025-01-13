@@ -12,12 +12,19 @@ interface BarberChatSectionProps {
 
 export function BarberChatSection({ shopId }: BarberChatSectionProps) {
   const { user } = useAuth();
-  const { chats, loading: chatsLoading, selectedChatId, setSelectedChatId } = useBarberChats(shopId);
+  const { 
+    chats, 
+    loading: chatsLoading, 
+    selectedChatId, 
+    setSelectedChatId 
+  } = useBarberChats(shopId);
   const selectedChat = chats.find(chat => chat.id === selectedChatId);
-  const { messages, loading: messagesLoading, sendMessage, markMessagesAsRead } = useChat(
-    shopId,
-    selectedChat?.customerId
-  );
+  const { 
+    messages, 
+    loading: messagesLoading, 
+    sendMessage, 
+    markMessagesAsRead 
+  } = useChat(shopId, selectedChat?.customerId);
   const [showMobileChat, setShowMobileChat] = useState(false);
 
   useEffect(() => {
@@ -38,7 +45,8 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-16rem)] lg:h-[calc(100vh-12rem)] max-h-[800px] min-h-[500px] bg-white rounded-lg border border-gray-100">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] -mx-3">
+      {/* Chat List */}
       <div 
         className={`lg:w-80 h-full ${
           showMobileChat ? 'hidden lg:block' : 'block'
@@ -52,11 +60,13 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
         />
       </div>
       
+      {/* Chat Window */}
       <div className={`flex-1 h-full ${
         !showMobileChat ? 'hidden lg:flex' : 'flex'
       } flex-col`}>
         {selectedChatId ? (
           <>
+            {/* Chat Header */}
             <div className="flex items-center gap-3 p-4 border-b bg-white">
               <button
                 onClick={handleBackToList}
@@ -75,6 +85,8 @@ export function BarberChatSection({ shopId }: BarberChatSectionProps) {
                 </span>
               </div>
             </div>
+
+            {/* Messages */}
             <div className="flex-1 overflow-hidden">
               <ChatWindow
                 messages={messages}
