@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
-import { Logo } from '../components/Logo';
+import { Link } from "react-router-dom";
+import { Logo } from "../components/Logo";
+import barberIllustration from "../assets/barber.svg";
 
 export function Home() {
   return (
@@ -14,36 +15,49 @@ export function Home() {
         {/* White curved section with buttons */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="relative">
+            {/* Illustration */}
+            <div className="absolute inset-0 -top-[234%] flex items-center justify-center">
+              <img
+                src={barberIllustration}
+                alt="Barber illustration"
+                className="min-w-[300px] max-w-[300px] h-auto"
+              />
+            </div>
+
             {/* Curved white background */}
-            <div 
+            <div
               className="absolute top-0 left-0 right-0 h-24 bg-white"
               style={{
-                borderTopLeftRadius: '3rem',
-                borderTopRightRadius: '3rem',
-                transform: 'translateY(-45%)'
+                borderTopLeftRadius: "3rem",
+                borderTopRightRadius: "3rem",
+                transform: "translateY(-45%)",
               }}
             />
-            
+
             {/* Buttons container */}
-            <div className="relative bg-white px-4 sm:px-6 pb-8 space-y-3">
+            <div className="relative bg-white px-4 sm:px-6 pb-6 min-h-[250px] max-h-[250px]">
               {/* Welcome Text and Description */}
-              <div className="pt-12 text-center">
+              <div className="text-center">
                 <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">
                   Welcome
                 </h1>
                 <p className="text-gray-600 text-base sm:text-lg mb-6 px-2 sm:px-4">
-                  The ultimate platform for barbers, beauticians, and salon professionals to manage their business
+                  The ultimate platform for{" "}
+                  <span className="italic">
+                    barbers, beauticians, and salon professionals
+                  </span>{" "}
+                  to manage their business
                 </p>
               </div>
 
-              <Link 
-                to="/login" 
-                className="block w-full py-2.5 sm:py-3 text-center text-lg sm:text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
+              <Link
+                to="/login"
+                className="block w-full mb-2 py-2.5 sm:py-3 text-center text-lg sm:text-xl font-semibold text-gray-900 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors"
               >
                 Sign In
               </Link>
-              
-              <Link 
+
+              <Link
                 to="/signup"
                 className="block w-full py-2.5 sm:py-3 text-center text-lg sm:text-xl font-semibold text-white bg-amber-600 rounded-2xl hover:bg-amber-700 transition-colors"
               >

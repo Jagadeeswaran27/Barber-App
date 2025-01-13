@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Calendar, QrCode, Copy, CheckCircle2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from '../Button';
 import { OfferRedemption } from './OfferRedemption';
+import { CountdownTimer } from './CountdownTimer';
 import { Toast } from '../Toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOfferRedemptions } from '../../hooks/useOfferRedemptions';
@@ -124,6 +125,10 @@ export function OfferCard({
               {formatDate(offer.startDate)} - {formatDate(offer.endDate)}
             </span>
           </div>
+
+          {isActive() && (
+            <CountdownTimer endDate={offer.endDate} />
+          )}
 
           <div className="flex items-center justify-end mt-4">
             <span className={`${getStatusColor()} text-sm px-3 py-1 rounded-full`}>
