@@ -9,6 +9,7 @@ import { Input } from '../components/Input';
 import { LoadingButton } from '../components/LoadingButton';
 import { Toast } from '../components/Toast';
 import { MapPin, Upload, Image as ImageIcon } from 'lucide-react';
+import { generateUniqueShopCode } from '../utils/shopCode';
 
 interface LocationState {
   email: string;
@@ -36,6 +37,11 @@ export function ShopSetup() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (name === 'shopName' && error) {
+      setError('');
+    }
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +69,13 @@ export function ShopSetup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate shop name length
+    if (formData.shopName.length < 3) {
+      setError('Shop name must be at least 3 characters long');
+      return;
+    }
+
     if (!selectedImage) {
       setError('Please select a shop image');
       return;
@@ -81,8 +94,8 @@ export function ShopSetup() {
       // Upload image and get URL
       const imageUrl = await uploadImage(selectedImage, user.uid);
       
-      // Generate shop code
-      const shopCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      // Generate unique shop code
+      const shopCode = await generateUniqueShopCode(formData.shopName, phone);
 
       // Create user document
       await setDoc(doc(db, 'users', user.uid), {
@@ -138,7 +151,8 @@ export function ShopSetup() {
             onChange={handleChange}
             required
             disabled={loading}
-            placeholder="Enter your shop name"
+            placeholder="Enter your shop name (min. 3 characters)"
+            minLength={3}
           />
 
           <div>

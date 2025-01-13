@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useShopDetails } from '../hooks/useShopDetails';
 import { useShopOffers } from '../hooks/useShopOffers';
 import { useShopPrices } from '../hooks/useShopPrices';
@@ -8,8 +8,22 @@ import { OffersList } from '../components/offers/OffersList';
 import { CustomerPriceList } from '../components/prices/CustomerPriceList';
 import { ChatSection } from '../components/chat/ChatSection';
 import { BottomNav } from '../components/BottomNav';
-import { Scissors, Tag, Store, MessageSquare, Camera, MapPin, IndianRupee, Clock, Copy, CheckCircle2 } from 'lucide-react';
+import { WorkingHoursDisplay } from '../components/WorkingHoursDisplay';
 import { useAuth } from '../contexts/AuthContext';
+import { 
+  Scissors, 
+  Tag, 
+  Store, 
+  MessageSquare, 
+  Camera, 
+  MapPin, 
+  IndianRupee, 
+  Clock, 
+  Copy, 
+  CheckCircle2, 
+  Mail, 
+  Phone 
+} from 'lucide-react';
 
 type ActiveTab = 'details' | 'offers' | 'chat' | 'prices';
 
@@ -19,19 +33,16 @@ export function ShopDetails() {
   const { 
     shopDetails, 
     loading, 
-    error,
-    refreshShopDetails 
+    error 
   } = useShopDetails(shopId || '');
   const { 
     offers, 
     loading: offersLoading, 
-    redeemOffer,
-    refreshOffers 
+    redeemOffer 
   } = useShopOffers(shopId || '');
   const { 
     prices, 
-    loading: pricesLoading,
-    refreshPrices 
+    loading: pricesLoading 
   } = useShopPrices(shopId || '');
   const [activeTab, setActiveTab] = useState<ActiveTab>('details');
   const [copied, setCopied] = useState(false);
@@ -97,8 +108,10 @@ export function ShopDetails() {
                   <Store className="h-5 w-5 text-amber-600" />
                   <h3 className="font-medium">About the Shop</h3>
                 </div>
-                {shopDetails?.description && (
+                {shopDetails?.description ? (
                   <p className="text-gray-600">{shopDetails.description}</p>
+                ) : (
+                  <p className="text-gray-500 text-sm italic">No description available</p>
                 )}
               </div>
 
@@ -123,6 +136,29 @@ export function ShopDetails() {
                 </div>
               </div>
 
+              {/* Contact Information */}
+              {(shopDetails?.email || shopDetails?.phone) && (
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="font-medium">Contact Information</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {shopDetails.email && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Mail className="h-4 w-4" />
+                        <span className="text-sm">{shopDetails.email}</span>
+                      </div>
+                    )}
+                    {shopDetails.phone && (
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Phone className="h-4 w-4" />
+                        <span className="text-sm">{shopDetails.phone}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Working Hours */}
               {shopDetails?.workingHours && (
                 <div className="p-4">
@@ -130,16 +166,7 @@ export function ShopDetails() {
                     <Clock className="h-5 w-5 text-amber-600" />
                     <h3 className="font-medium">Working Hours</h3>
                   </div>
-                  <div className="space-y-2">
-                    {Object.entries(shopDetails.workingHours).map(([day, hours]) => (
-                      <div key={day} className="flex justify-between text-sm">
-                        <span className="text-gray-600">{day}</span>
-                        <span className="text-gray-900">
-                          {hours?.closed ? 'Closed' : `${hours?.open} - ${hours?.close}`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <WorkingHoursDisplay hours={shopDetails.workingHours} />
                 </div>
               )}
             </div>
@@ -161,7 +188,6 @@ export function ShopDetails() {
               <OffersList
                 offers={offers}
                 onCreateOffer={() => {}}
-                onDeleteOffer={() => {}}
                 onRedeemOffer={redeemOffer}
               />
             )}
@@ -187,11 +213,7 @@ export function ShopDetails() {
 
       case 'chat':
         return shopId ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="h-5 w-5 text-amber-600" />
-              <h3 className="text-lg font-semibold">Chat with Shop</h3>
-            </div>
+          <div className="-m-6">
             <ChatSection shopId={shopId} />
           </div>
         ) : null;
@@ -256,9 +278,11 @@ export function ShopDetails() {
             <Scissors className="h-8 w-8 animate-spin text-amber-600" />
           </div>
         ) : error ? (
-          <div className="text-red-600 text-center p-8">{error}</div>
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center">
+            {error}
+          </div>
         ) : (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
             {renderTabContent()}
           </div>
         )}
